@@ -9,7 +9,7 @@ on:
       days:
         description: "Number of days before today to check for new citations"
         required: false
-        default: "2"
+        default: "5"
 
 jobs:
   citation-bot:
@@ -44,5 +44,5 @@ jobs:
         env:
           GALAXY_SOCIAL_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
           REPO: "arash77/galaxy-social-main"
-          DAYS: ${{ github.event.inputs.days || '2' }}
+          DAYS: ${{ github.event.inputs.days || '5' }}
         run: python -u app/citation_bot.py
