@@ -1,0 +1,92 @@
+feeds:
+  - url: https://galaxyproject.org/eu/feed.atom
+
+    format: "📝 New blog post Released!\n\n{content}\n\n{link}"
+
+    media:
+      - mastodon-eu-freiburg
+      - matrix-eu-announce
+      - bluesky-galaxyproject
+      - linkedin-galaxyproject
+
+    mentions:
+      mastodon-eu-freiburg:
+        - galaxyproject@mstdn.science
+      bluesky-galaxyproject:
+        - galaxyproject.bsky.social
+      matrix-eu-announce:
+        - bgruening:matrix.org
+
+    hashtags:
+      mastodon-eu-freiburg:
+        - UseGalaxy
+        - GalaxyProject
+        - UniFreiburg
+        - usegalaxy
+        - EOSC
+        - EuroScienceGateway
+      bluesky-galaxyprojct:
+        - UseGalaxy
+        - GalaxyProject
+        - UniFreiburg
+        - usegalaxy
+        - EOSC
+        - EuroScienceGateway
+      linkedin-galaxyproject:
+        - UseGalaxy
+        - GalaxyProject
+        - UniFreiburg
+        - usegalaxy
+        - EOSC
+        - EuroScienceGateway
+
+# youtube_channels:
+#   - channel: "https://www.youtube.com/c/galaxyproject"
+
+#     format: "🎥 New YouTube Video Released!\n\n{title}\n\n🔗 Watch it now: {link}"
+
+#     media:
+#       - bluesky
+#       - mastodon
+#       - matrix
+#       - slack
+
+#     mentions:
+#       bluesky:
+#         - galaxyproject.bsky.social
+#       mastodon:
+#         - galaxyfreiburg@bawü.social
+
+#     hashtags:
+#       bluesky:
+#         - usegalaxy
+#       mastodon:
+#         - usegalaxy
+
+# citations:
+#   - zotero_group_id: 1732893
+
+#     tag: ">UseGalaxy.eu || >RNA Workbench || RNA workbench || >ASaiM || >Live EU || >Proteomics EU || >Metagenomics EU || >ML Workbench || >ChemicalToolbox"
+
+#     format: "📰 New publication Released!\n\n{title}\nBy: {creators}\n{url}"
+
+#     media:
+#       - bluesky
+#       - mastodon
+#       - matrix
+#       - slack
+#       - linkedin
+
+#     mentions:
+#       bluesky:
+#         - galaxyproject.bsky.social
+#       mastodon:
+#         - galaxyfreiburg@bawü.social
+
+#     hashtags:
+#       bluesky:
+#         - usegalaxy
+#       mastodon:
+#         - usegalaxy
+#       linkedin:
+#         - usegalaxy
