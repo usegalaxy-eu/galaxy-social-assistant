@@ -22,7 +22,6 @@ def main():
 
         folder = feed_data.feed.title.replace(" ", "_").lower()
         format_string = feed.get("format")
-        feeds_processed = []
         for entry in feed_data.entries:
             date_entry = (
                 entry.get("published") or entry.get("pubDate") or entry.get("updated")
@@ -49,16 +48,17 @@ def main():
                 "date": published_date,
                 "rel_file_path": f"{folder}/{file_name}.md",
                 "formatted_text": formatted_text,
+                "link": entry.link,
             }
-            if utils_obj.process_entry(entry_data):
-                feeds_processed.append(f"[{entry.title}]({entry.link})")
-
-    title = (
-        f"Update from feeds input bot since {utils_obj.start_date.strftime('%Y-%m-%d')}"
-    )
-    feeds_processed_str = "- " + "\n- ".join(feeds_processed)
-    body = f"This PR created automatically by feed bot.\n\nFeeds processed:\n{feeds_processed_str}"
-    utils_obj.create_pull_request(title, body)
+            utils_obj.process_entry(entry_data)
+            title = f"Update from feeds: {entry.link}"
+            feeds_processed_str = f"[{entry.title}]({entry.link})"
+            body = (
+                f"This PR created automatically by feed bot.\n"
+                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
+                f"Feeds processed:\n{feeds_processed_str}"
+            )
+            utils_obj.create_pull_request(title, body)
 
 
 if __name__ == "__main__":

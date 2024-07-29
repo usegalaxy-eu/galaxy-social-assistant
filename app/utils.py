@@ -41,18 +41,11 @@ class utils:
         g = Github(access_token)
         self.repo = g.get_repo(repo_name)
 
-        self.existing_files = set(
-            pr_file.filename
-            for pr in self.repo.get_pulls(state="open")
-            for pr_file in pr.get_files()
-            if pr_file.filename.startswith(self.bot_path)
-        )
-        git_tree = self.repo.get_git_tree(self.repo.default_branch, recursive=True)
-        self.existing_files.update(
-            file.path
-            for file in git_tree.tree
-            if file.path.startswith(self.bot_path) and file.path.endswith(".md")
-        )
+        self.existing_files = set()
+        for pr in self.repo.get_pulls(state=["open", "closed"]):
+            if pr.head.ref.startswith("Update from "):
+                self.existing_files.add(pr.title)
+
         self.branch_name = (
             f"{self.bot_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
         )
@@ -78,7 +71,7 @@ class utils:
             print(f"Skipping as it is older: {title}")
             return False
 
-        if file_path in self.existing_files:
+        if entry.get("link") in self.existing_files:
             print(f"Skipping as file already exists: {file_path} for {title}")
             return False
 

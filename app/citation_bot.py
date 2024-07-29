@@ -32,8 +32,6 @@ def main():
 
         folder = citation.get("zotero_group_id")
         format_string = citation.get("format")
-        entry_processed = []
-
         for item in items:
             data = item["data"]
 
@@ -60,14 +58,17 @@ def main():
                 "date": data["dateAdded"],
                 "rel_file_path": f"{folder}/{item['key']}.md",
                 "formatted_text": formatted_text,
+                "link": data.get("url"),
             }
-            if utils_obj.process_entry(entry_data):
-                entry_processed.append(f"[{data['title']}]({data['url']})")
-
-    title = f"Update from citation input bot since {utils_obj.start_date.strftime('%Y-%m-%d')}"
-    entry_processed_str = "- " + "\n- ".join(entry_processed)
-    body = f"This PR created automatically by citation bot.\n\nCitations processed:\n{entry_processed_str}"
-    utils_obj.create_pull_request(title, body)
+            utils_obj.process_entry(entry_data)
+            title = f"Update from citations: {data['url']}"
+            entry_processed_str = f"[{data['title']}]({data['url']})"
+            body = (
+                f"This PR created automatically by citation bot.\n"
+                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
+                f"nCitations processed:\n{entry_processed_str}"
+            )
+            utils_obj.create_pull_request(title, body)
 
 
 if __name__ == "__main__":
