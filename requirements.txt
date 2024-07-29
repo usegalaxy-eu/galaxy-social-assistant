@@ -1,0 +1,7 @@
+feedparser
+PyYAML
+PyGithub
+pytube
+python-dateutil
+pyzotero
+markdownify
