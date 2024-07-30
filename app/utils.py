@@ -27,15 +27,16 @@ class utils:
         if self.list is None:
             raise ValueError(f"No {self.item_type} found in the config file")
 
-        errors = [
-            f"No media found in the config file for {item} in {self.item_type}"
-            for item in self.list
-            if item.get("media") is None
-        ] + [
-            f"No format found in the config file for {item} in {self.item_type}"
-            for item in self.list
-            if item.get("format") is None
-        ]
+        errors = []
+        for item in self.list:
+            if item.get("media") is None:
+                errors.append(
+                    f"No media found in the config file for {item} in {self.item_type}"
+                )
+            if item.get("format") is None:
+                errors.append(
+                    f"No format found in the config file for {item} in {self.item_type}"
+                )
         if errors:
             raise ValueError("\n".join(errors))
 
@@ -44,12 +45,11 @@ class utils:
         g = Github(access_token)
         self.repo = g.get_repo(repo_name)
 
-        self.existing_files = {
-            pr.title
-            for pr in g.search_issues(
-                f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
-            )
-        }
+        self.existing_files = set()
+        for pr in g.search_issues(
+            f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
+        ):
+            self.existing_files.add(pr.title)
 
         self.start_date = datetime.now().date() - timedelta(
             days=int(os.environ.get("DAYS", 1))
