@@ -50,14 +50,9 @@ def main():
             data["dateAdded"] = (
                 parser.isoparse(data["dateAdded"]).date() if "dateAdded" in data else ""
             )
+
             formatted_text = format_string.format(**data)
 
-            pr_title = f"Update from citations: {data['url']}"
-            pr_body = (
-                f"This PR is created automatically by a citation bot.\n"
-                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
-                f"Citation processed:\n{[{data['title']}]({data['url']})}"
-            )
             entry_data = {
                 "title": data["title"],
                 "config": citation,
@@ -65,8 +60,6 @@ def main():
                 "rel_file_path": f"{folder}/{item['key']}.md",
                 "formatted_text": formatted_text,
                 "link": data.get("url"),
-                "pr_title": pr_title,
-                "pr_body": pr_body,
             }
             utils_obj.process_entry(entry_data)
 

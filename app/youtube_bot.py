@@ -48,14 +48,9 @@ def main():
                 if "media_thumbnail" in entry
                 else ""
             )
+
             formatted_text = format_string.format(**entry)
 
-            title = f"Update from Youtube: {entry.link}"
-            body = (
-                f"This PR is created automatically by a youtube bot.\n"
-                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
-                f"Youtube video processed:\n{[{entry.title}]({entry.link})}"
-            )
             entry_data = {
                 "title": entry.title,
                 "config": youtube_channel,
@@ -63,8 +58,6 @@ def main():
                 "rel_file_path": f"{folder}/{file_name}.md",
                 "formatted_text": formatted_text,
                 "link": entry.link,
-                "pr_title": title,
-                "pr_body": body,
             }
             utils_obj.process_entry(entry_data)
 

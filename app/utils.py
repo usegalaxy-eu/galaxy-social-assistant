@@ -8,6 +8,7 @@ from github import Github, GithubException
 class utils:
     def __init__(self, bot_path, item_type):
         self.bot_path = bot_path
+        self.item_type = item_type
 
         config_file = os.path.abspath(
             os.path.join(
@@ -22,19 +23,21 @@ class utils:
         if configs is None:
             raise ValueError("No config found in the file")
 
-        self.list = configs.get(item_type)
+        self.list = configs.get(self.item_type)
         if self.list is None:
-            raise ValueError(f"No {item_type} found in the config file")
+            raise ValueError(f"No {self.item_type} found in the config file")
 
-        for list_items in self.list:
-            if list_items.get("media") is None:
-                raise ValueError(
-                    f"No media found in the config file for {list_items} in {item_type}"
-                )
-            elif list_items.get("format") is None:
-                raise ValueError(
-                    f"No format found in the config file for {list_items} in {item_type}"
-                )
+        errors = [
+            f"No media found in the config file for {item} in {self.item_type}"
+            for item in self.list
+            if item.get("media") is None
+        ] + [
+            f"No format found in the config file for {item} in {self.item_type}"
+            for item in self.list
+            if item.get("format") is None
+        ]
+        if errors:
+            raise ValueError("\n".join(errors))
 
         access_token = os.environ.get("GALAXY_SOCIAL_BOT_TOKEN")
         repo_name = os.environ.get("REPO")
@@ -59,8 +62,7 @@ class utils:
         date = entry.get("date")
         rel_file_path = entry.get("rel_file_path")
         formatted_text = entry.get("formatted_text")
-        pr_title = entry.get("pr_title")
-        pr_body = entry.get("pr_body")
+        link = entry.get("link")
 
         file_path = f"{self.bot_path}/{rel_file_path}"
 
@@ -68,7 +70,7 @@ class utils:
             print(f"Skipping as it is older: {title}")
             return False
 
-        if entry.get("link") in self.existing_files:
+        if link in self.existing_files:
             print(f"Skipping as file already exists: {file_path} for {title}")
             return False
 
@@ -95,6 +97,13 @@ class utils:
             message=f"Add {title}",
             content=md_content,
             branch=branch_name,
+        )
+
+        pr_title = f"Update from {self.item_type}: {link}"
+        pr_body = (
+            f"This PR is created automatically by a {self.item_type} bot.\n"
+            f"Update since {self.start_date.strftime('%Y-%m-%d')}\n\n"
+            f"Processed:\n[{title}]({link})"
         )
 
         try:
