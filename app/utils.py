@@ -41,10 +41,12 @@ class utils:
         g = Github(access_token)
         self.repo = g.get_repo(repo_name)
 
-        self.existing_files = set()
-        for pr in self.repo.get_pulls(state=["open", "closed"]):
-            if pr.head.ref.startswith("Update from "):
-                self.existing_files.add(pr.title)
+        self.existing_files = {
+            pr.title
+            for pr in g.search_issues(
+                f"repo:{repo_name} is:pr base:main {self.bot_path}"
+            )
+        }
 
         self.branch_name = (
             f"{self.bot_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
