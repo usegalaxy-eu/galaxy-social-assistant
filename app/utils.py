@@ -79,7 +79,8 @@ class utils:
                 key: config[key]
                 for key in ["media", "mentions", "hashtags"]
                 if key in config
-            }
+            },
+            sort_keys=False,
         )
 
         md_content = f"---\n{md_config}---\n{formatted_text}"
