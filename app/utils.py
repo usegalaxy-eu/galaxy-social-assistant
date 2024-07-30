@@ -83,7 +83,7 @@ class utils:
         md_content = f"---\n{md_config}---\n{formatted_text}"
 
         self.branch_name = (
-            f"{self.bot_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            f"{file_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
         )
         self.repo.create_git_ref(
             ref=f"refs/heads/{self.branch_name}",
