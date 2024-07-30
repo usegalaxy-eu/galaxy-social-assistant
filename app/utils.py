@@ -44,7 +44,7 @@ class utils:
         self.existing_files = {
             pr.title
             for pr in g.search_issues(
-                f"repo:{repo_name} is:pr base:main {self.bot_path}"
+                f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
             )
         }
 
