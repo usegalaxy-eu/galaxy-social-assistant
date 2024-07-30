@@ -52,11 +52,10 @@ def main():
             }
             utils_obj.process_entry(entry_data)
             title = f"Update from feeds: {entry.link}"
-            feeds_processed_str = f"[{entry.title}]({entry.link})"
             body = (
                 f"This PR is created automatically by a feed bot.\n"
                 f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
-                f"Feeds processed:\n{feeds_processed_str}"
+                f"Feed processed:\n[{entry.title}]({entry.link})"
             )
             utils_obj.create_pull_request(title, body)
 
