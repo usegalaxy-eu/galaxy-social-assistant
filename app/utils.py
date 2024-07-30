@@ -8,6 +8,7 @@ from github import Github, GithubException
 class utils:
     def __init__(self, bot_path, item_type):
         self.bot_path = bot_path
+        self.item_type = item_type
 
         config_file = os.path.abspath(
             os.path.join(
@@ -17,49 +18,39 @@ class utils:
             )
         )
         with open(config_file, "r") as file:
-            self.configs = yaml.safe_load(file)
+            configs = yaml.safe_load(file)
 
-        if self.configs is None:
+        if configs is None:
             raise ValueError("No config found in the file")
 
-        self.list = self.configs.get(item_type)
+        self.list = configs.get(self.item_type)
         if self.list is None:
-            raise ValueError(f"No {item_type} found in the config file")
+            raise ValueError(f"No {self.item_type} found in the config file")
 
-        for list_items in self.list:
-            if list_items.get("media") is None:
-                raise ValueError(
-                    f"No media found in the config file for {list_items} in {item_type}"
+        errors = []
+        for item in self.list:
+            if item.get("media") is None:
+                errors.append(
+                    f"No media found in the config file for {item} in {self.item_type}"
                 )
-            elif list_items.get("format") is None:
-                raise ValueError(
-                    f"No format found in the config file for {list_items} in {item_type}"
+            if item.get("format") is None:
+                errors.append(
+                    f"No format found in the config file for {item} in {self.item_type}"
                 )
+        if errors:
+            raise ValueError("\n".join(errors))
 
         access_token = os.environ.get("GALAXY_SOCIAL_BOT_TOKEN")
         repo_name = os.environ.get("REPO")
         g = Github(access_token)
         self.repo = g.get_repo(repo_name)
 
-        self.existing_files = set(
-            pr_file.filename
-            for pr in self.repo.get_pulls(state="open")
-            for pr_file in pr.get_files()
-            if pr_file.filename.startswith(self.bot_path)
-        )
-        git_tree = self.repo.get_git_tree(self.repo.default_branch, recursive=True)
-        self.existing_files.update(
-            file.path
-            for file in git_tree.tree
-            if file.path.startswith(self.bot_path) and file.path.endswith(".md")
-        )
-        self.branch_name = (
-            f"{self.bot_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        )
-        self.repo.create_git_ref(
-            ref=f"refs/heads/{self.branch_name}",
-            sha=self.repo.get_branch("main").commit.sha,
-        )
+        self.existing_files = set()
+        for pr in g.search_issues(
+            f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
+        ):
+            self.existing_files.add(pr.title)
+
         self.start_date = datetime.now().date() - timedelta(
             days=int(os.environ.get("DAYS", 1))
         )
@@ -71,6 +62,7 @@ class utils:
         date = entry.get("date")
         rel_file_path = entry.get("rel_file_path")
         formatted_text = entry.get("formatted_text")
+        link = entry.get("link")
 
         file_path = f"{self.bot_path}/{rel_file_path}"
 
@@ -78,7 +70,7 @@ class utils:
             print(f"Skipping as it is older: {title}")
             return False
 
-        if file_path in self.existing_files:
+        if link in self.existing_files:
             print(f"Skipping as file already exists: {file_path} for {title}")
             return False
 
@@ -89,41 +81,43 @@ class utils:
                 key: config[key]
                 for key in ["media", "mentions", "hashtags"]
                 if key in config
-            }
+            },
+            sort_keys=False,
         )
 
         md_content = f"---\n{md_config}---\n{formatted_text}"
 
+        branch_name = f"{file_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        self.repo.create_git_ref(
+            ref=f"refs/heads/{branch_name}",
+            sha=self.repo.get_branch("main").commit.sha,
+        )
         self.repo.create_file(
             path=file_path,
             message=f"Add {title}",
             content=md_content,
-            branch=self.branch_name,
+            branch=branch_name,
         )
-        return True
 
-    def create_pull_request(self, title, body):
-        base_sha = self.repo.get_branch("main").commit.sha
-        compare_sha = self.repo.get_branch(self.branch_name).commit.sha
-        comparison = self.repo.compare(base_sha, compare_sha).total_commits
-
-        if comparison == 0:
-            self.repo.get_git_ref(f"heads/{self.branch_name}").delete()
-            print(f"No new item found.\nRemoving branch {self.branch_name}")
-            return False
+        pr_title = f"Update from {self.item_type}: {link}"
+        pr_body = (
+            f"This PR is created automatically by a {self.item_type} bot.\n"
+            f"Update since {self.start_date.strftime('%Y-%m-%d')}\n\n"
+            f"Processed:\n[{title}]({link})"
+        )
 
         try:
             pr = self.repo.create_pull(
-                title=title,
-                body=body,
+                title=pr_title,
+                body=pr_body,
                 base="main",
-                head=self.branch_name,
+                head=branch_name,
             )
             print(f"PR created: {pr.html_url}")
             return True
         except GithubException as e:
-            self.repo.get_git_ref(f"heads/{self.branch_name}").delete()
+            self.repo.get_git_ref(f"heads/{branch_name}").delete()
             print(
-                f"Error in creating PR: {e.data.get('errors')[0].get('message')}\nRemoving branch {self.branch_name}"
+                f"Error in creating PR: {e.data.get('errors')[0].get('message')}\nRemoving branch {branch_name}"
             )
             return False

@@ -27,7 +27,6 @@ def main():
 
         folder = feed_data.feed.title.replace(" ", "_").lower()
         format_string = youtube_channel.get("format")
-        feeds_processed = []
         for entry in feed_data.entries:
             date_entry = (
                 entry.get("published") or entry.get("pubDate") or entry.get("updated")
@@ -40,7 +39,7 @@ def main():
 
             file_name = entry.link.split("/")[-1] or entry.link.split("/")[-2]
             file_name = file_name.split("?v=")[-1] if "?v=" in file_name else file_name
-            
+
             for key, value in entry.items():
                 if isinstance(value, list):
                     entry[key] = markdownify(value[0].value).strip()
@@ -49,6 +48,7 @@ def main():
                 if "media_thumbnail" in entry
                 else ""
             )
+
             formatted_text = format_string.format(**entry)
 
             entry_data = {
@@ -57,14 +57,9 @@ def main():
                 "date": published_date,
                 "rel_file_path": f"{folder}/{file_name}.md",
                 "formatted_text": formatted_text,
+                "link": entry.link,
             }
-            if utils_obj.process_entry(entry_data):
-                feeds_processed.append(f"[{entry.title}]({entry.link})")
-
-    title = f"Update from Youtube input bot since {utils_obj.start_date.strftime('%Y-%m-%d')}"
-    feeds_processed_str = "- " + "\n- ".join(feeds_processed)
-    body = f"This PR created automatically by youtube bot.\nYoutube videos processed:\n{feeds_processed_str}"
-    utils_obj.create_pull_request(title, body)
+            utils_obj.process_entry(entry_data)
 
 
 if __name__ == "__main__":
