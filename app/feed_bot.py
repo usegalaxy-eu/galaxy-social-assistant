@@ -54,7 +54,7 @@ def main():
             title = f"Update from feeds: {entry.link}"
             feeds_processed_str = f"[{entry.title}]({entry.link})"
             body = (
-                f"This PR created automatically by feed bot.\n"
+                f"This PR is created automatically by a feed bot.\n"
                 f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
                 f"Feeds processed:\n{feeds_processed_str}"
             )

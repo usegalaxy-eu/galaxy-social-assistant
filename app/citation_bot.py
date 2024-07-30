@@ -64,7 +64,7 @@ def main():
             title = f"Update from citations: {data['url']}"
             entry_processed_str = f"[{data['title']}]({data['url']})"
             body = (
-                f"This PR created automatically by citation bot.\n"
+                f"This PR is created automatically by a citation bot.\n"
                 f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
                 f"nCitations processed:\n{entry_processed_str}"
             )

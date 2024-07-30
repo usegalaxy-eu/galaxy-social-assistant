@@ -62,7 +62,7 @@ def main():
             title = f"Update from Youtube: {entry.link}"
             feeds_processed_str = f"[{entry.title}]({entry.link})"
             body = (
-                f"This PR created automatically by youtube bot.\n"
+                f"This PR is created automatically by a youtube bot.\n"
                 f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
                 f"Youtube videos processed:\n{feeds_processed_str}"
             )
