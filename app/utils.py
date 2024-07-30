@@ -48,13 +48,6 @@ class utils:
             )
         }
 
-        self.branch_name = (
-            f"{self.bot_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        )
-        self.repo.create_git_ref(
-            ref=f"refs/heads/{self.branch_name}",
-            sha=self.repo.get_branch("main").commit.sha,
-        )
         self.start_date = datetime.now().date() - timedelta(
             days=int(os.environ.get("DAYS", 1))
         )
@@ -89,6 +82,13 @@ class utils:
 
         md_content = f"---\n{md_config}---\n{formatted_text}"
 
+        self.branch_name = (
+            f"{self.bot_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        )
+        self.repo.create_git_ref(
+            ref=f"refs/heads/{self.branch_name}",
+            sha=self.repo.get_branch("main").commit.sha,
+        )
         self.repo.create_file(
             path=file_path,
             message=f"Add {title}",

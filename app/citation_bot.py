@@ -60,14 +60,14 @@ def main():
                 "formatted_text": formatted_text,
                 "link": data.get("url"),
             }
-            utils_obj.process_entry(entry_data)
-            title = f"Update from citations: {data['url']}"
-            body = (
-                f"This PR is created automatically by a citation bot.\n"
-                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
-                f"Citation processed:\n{[{data['title']}]({data['url']})}"
-            )
-            utils_obj.create_pull_request(title, body)
+            if utils_obj.process_entry(entry_data):
+                title = f"Update from citations: {data['url']}"
+                body = (
+                    f"This PR is created automatically by a citation bot.\n"
+                    f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
+                    f"Citation processed:\n{[{data['title']}]({data['url']})}"
+                )
+                utils_obj.create_pull_request(title, body)
 
 
 if __name__ == "__main__":

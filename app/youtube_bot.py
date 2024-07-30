@@ -39,7 +39,7 @@ def main():
 
             file_name = entry.link.split("/")[-1] or entry.link.split("/")[-2]
             file_name = file_name.split("?v=")[-1] if "?v=" in file_name else file_name
-            
+
             for key, value in entry.items():
                 if isinstance(value, list):
                     entry[key] = markdownify(value[0].value).strip()
@@ -58,14 +58,14 @@ def main():
                 "formatted_text": formatted_text,
                 "link": entry.link,
             }
-            utils_obj.process_entry(entry_data)
-            title = f"Update from Youtube: {entry.link}"
-            body = (
-                f"This PR is created automatically by a youtube bot.\n"
-                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
-                f"Youtube video processed:\n{[{entry.title}]({entry.link})}"
-            )
-            utils_obj.create_pull_request(title, body)
+            if utils_obj.process_entry(entry_data):
+                title = f"Update from Youtube: {entry.link}"
+                body = (
+                    f"This PR is created automatically by a youtube bot.\n"
+                    f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
+                    f"Youtube video processed:\n{[{entry.title}]({entry.link})}"
+                )
+                utils_obj.create_pull_request(title, body)
 
 
 if __name__ == "__main__":
