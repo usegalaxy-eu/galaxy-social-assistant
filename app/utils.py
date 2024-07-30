@@ -17,12 +17,12 @@ class utils:
             )
         )
         with open(config_file, "r") as file:
-            self.configs = yaml.safe_load(file)
+            configs = yaml.safe_load(file)
 
-        if self.configs is None:
+        if configs is None:
             raise ValueError("No config found in the file")
 
-        self.list = self.configs.get(item_type)
+        self.list = configs.get(item_type)
         if self.list is None:
             raise ValueError(f"No {item_type} found in the config file")
 
@@ -59,6 +59,8 @@ class utils:
         date = entry.get("date")
         rel_file_path = entry.get("rel_file_path")
         formatted_text = entry.get("formatted_text")
+        pr_title = entry.get("pr_title")
+        pr_body = entry.get("pr_body")
 
         file_path = f"{self.bot_path}/{rel_file_path}"
 
@@ -82,43 +84,30 @@ class utils:
 
         md_content = f"---\n{md_config}---\n{formatted_text}"
 
-        self.branch_name = (
-            f"{file_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        )
+        branch_name = f"{file_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
         self.repo.create_git_ref(
-            ref=f"refs/heads/{self.branch_name}",
+            ref=f"refs/heads/{branch_name}",
             sha=self.repo.get_branch("main").commit.sha,
         )
         self.repo.create_file(
             path=file_path,
             message=f"Add {title}",
             content=md_content,
-            branch=self.branch_name,
+            branch=branch_name,
         )
-        return True
-
-    def create_pull_request(self, title, body):
-        base_sha = self.repo.get_branch("main").commit.sha
-        compare_sha = self.repo.get_branch(self.branch_name).commit.sha
-        comparison = self.repo.compare(base_sha, compare_sha).total_commits
-
-        if comparison == 0:
-            self.repo.get_git_ref(f"heads/{self.branch_name}").delete()
-            print(f"No new item found.\nRemoving branch {self.branch_name}")
-            return False
 
         try:
             pr = self.repo.create_pull(
-                title=title,
-                body=body,
+                title=pr_title,
+                body=pr_body,
                 base="main",
-                head=self.branch_name,
+                head=branch_name,
             )
             print(f"PR created: {pr.html_url}")
             return True
         except GithubException as e:
-            self.repo.get_git_ref(f"heads/{self.branch_name}").delete()
+            self.repo.get_git_ref(f"heads/{branch_name}").delete()
             print(
-                f"Error in creating PR: {e.data.get('errors')[0].get('message')}\nRemoving branch {self.branch_name}"
+                f"Error in creating PR: {e.data.get('errors')[0].get('message')}\nRemoving branch {branch_name}"
             )
             return False

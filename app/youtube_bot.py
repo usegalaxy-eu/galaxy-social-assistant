@@ -50,6 +50,12 @@ def main():
             )
             formatted_text = format_string.format(**entry)
 
+            title = f"Update from Youtube: {entry.link}"
+            body = (
+                f"This PR is created automatically by a youtube bot.\n"
+                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
+                f"Youtube video processed:\n{[{entry.title}]({entry.link})}"
+            )
             entry_data = {
                 "title": entry.title,
                 "config": youtube_channel,
@@ -57,15 +63,10 @@ def main():
                 "rel_file_path": f"{folder}/{file_name}.md",
                 "formatted_text": formatted_text,
                 "link": entry.link,
+                "pr_title": title,
+                "pr_body": body,
             }
-            if utils_obj.process_entry(entry_data):
-                title = f"Update from Youtube: {entry.link}"
-                body = (
-                    f"This PR is created automatically by a youtube bot.\n"
-                    f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
-                    f"Youtube video processed:\n{[{entry.title}]({entry.link})}"
-                )
-                utils_obj.create_pull_request(title, body)
+            utils_obj.process_entry(entry_data)
 
 
 if __name__ == "__main__":

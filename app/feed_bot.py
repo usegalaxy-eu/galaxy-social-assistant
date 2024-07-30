@@ -42,6 +42,12 @@ def main():
 
             formatted_text = format_string.format(**entry)
 
+            pr_title = f"Update from feeds: {entry.link}"
+            pr_body = (
+                f"This PR is created automatically by a feed bot.\n"
+                f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
+                f"Feed processed:\n[{entry.title}]({entry.link})"
+            )
             entry_data = {
                 "title": entry.title,
                 "config": feed,
@@ -49,15 +55,10 @@ def main():
                 "rel_file_path": f"{folder}/{file_name}.md",
                 "formatted_text": formatted_text,
                 "link": entry.link,
+                "pr_title": pr_title,
+                "pr_body": pr_body,
             }
-            if utils_obj.process_entry(entry_data):
-                title = f"Update from feeds: {entry.link}"
-                body = (
-                    f"This PR is created automatically by a feed bot.\n"
-                    f"Update since {utils_obj.start_date.strftime('%Y-%m-%d')}\n\n"
-                    f"Feed processed:\n[{entry.title}]({entry.link})"
-                )
-                utils_obj.create_pull_request(title, body)
+            utils_obj.process_entry(entry_data)
 
 
 if __name__ == "__main__":
