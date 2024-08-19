@@ -70,7 +70,7 @@ class utils:
             print(f"Skipping as it is older: {title}")
             return False
 
-        if link in self.existing_files:
+        if any(link in pr_title for pr_title in self.existing_files):
             print(f"Skipping as file already exists: {file_path} for {title}")
             return False
 
