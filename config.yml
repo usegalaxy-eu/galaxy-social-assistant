@@ -1,7 +1,7 @@
 feeds:
   - url: https://galaxyproject.org/eu/feed.atom
 
-    format: "📝 New blog post Released!\n\n{content}\n\n{link}"
+    format: "📝 New blog post Released!\n{link}\n\n{content}"
 
     media:
       - mastodon-eu-freiburg
@@ -22,21 +22,18 @@ feeds:
         - UseGalaxy
         - GalaxyProject
         - UniFreiburg
-        - usegalaxy
         - EOSC
         - EuroScienceGateway
       bluesky-galaxyproject:
         - UseGalaxy
         - GalaxyProject
         - UniFreiburg
-        - usegalaxy
         - EOSC
         - EuroScienceGateway
       linkedin-galaxyproject:
         - UseGalaxy
         - GalaxyProject
         - UniFreiburg
-        - usegalaxy
         - EOSC
         - EuroScienceGateway
 

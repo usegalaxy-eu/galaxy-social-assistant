@@ -1,4 +1,5 @@
 import os
+import re
 
 import feedparser
 from dateutil import parser
@@ -39,6 +40,8 @@ def main():
                 if "content" in entry
                 else ""
             )
+            # collapse 2 and more empty lines into one
+            entry["content"] = re.sub(r"\n{3,}", "\n\n", entry["content"])
 
             formatted_text = format_string.format(**entry)
 
