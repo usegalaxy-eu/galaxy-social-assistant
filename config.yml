@@ -3,11 +3,16 @@ feeds:
 
     format: "📝 New blog post Released!\n{link}\n\n{content}"
 
+    # Medias should get grouped if they need to be in same file or seperated
+    # This is needed while in bluesky the characters are limited and we need
+    # it to be seperated from the the main file to edit it seperately
     media:
-      - - mastodon-eu-freiburg
+      - group1:
+        - mastodon-eu-freiburg
         - matrix-eu-announce
         - linkedin-galaxyproject
-      - - bluesky-galaxyproject
+      - group2:
+        - bluesky-galaxyproject
 
     mentions:
       mastodon-eu-freiburg:
