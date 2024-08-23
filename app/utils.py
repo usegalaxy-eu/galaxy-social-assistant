@@ -97,7 +97,7 @@ class utils:
             md_content = f"---\n{md_config}---\n{formatted_text}"
 
             self.repo.create_file(
-                path=file_path + f"-{'_'.join(media_group)}.md",
+                path=f"{file_path}-{'_'.join(media_group)}.md",
                 message=f"Add {title} for {', '.join(media_group)}",
                 content=md_content,
                 branch=branch_name,
