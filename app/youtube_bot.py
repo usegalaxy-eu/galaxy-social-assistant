@@ -55,7 +55,7 @@ def main():
                 "title": entry.title,
                 "config": youtube_channel,
                 "date": published_date,
-                "rel_file_path": f"{folder}/{file_name}.md",
+                "rel_file_path": f"{folder}/{file_name}",
                 "formatted_text": formatted_text,
                 "link": entry.link,
             }

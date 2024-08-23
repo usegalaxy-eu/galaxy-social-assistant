@@ -57,7 +57,7 @@ def main():
                 "title": data["title"],
                 "config": citation,
                 "date": data["dateAdded"],
-                "rel_file_path": f"{folder}/{item['key']}.md",
+                "rel_file_path": f"{folder}/{item['key']}",
                 "formatted_text": formatted_text,
                 "link": data.get("url"),
             }
