@@ -76,28 +76,33 @@ class utils:
 
         print(f"Processing {file_path} from {title}")
 
-        md_config = yaml.dump(
-            {
-                key: config[key]
-                for key in ["media", "mentions", "hashtags"]
-                if key in config
-            },
-            sort_keys=False,
-        )
-
-        md_content = f"---\n{md_config}---\n{formatted_text}"
-
         branch_name = f"{file_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
         self.repo.create_git_ref(
             ref=f"refs/heads/{branch_name}",
             sha=self.repo.get_branch("main").commit.sha,
         )
-        self.repo.create_file(
-            path=file_path,
-            message=f"Add {title}",
-            content=md_content,
-            branch=branch_name,
-        )
+
+        for media_group in config.get("media", []):
+            conf_media = list(media_group.values())[0]
+            if isinstance(conf_media, list):
+                config_dict = {"media": conf_media}
+                for key in ["mentions", "hashtags"]:
+                    for media in conf_media:
+                        if config.get(key) and config[key].get(media):
+                            if key not in config_dict:
+                                config_dict[key] = {}
+                            config_dict[key][media] = config[key][media]
+
+                md_config = yaml.dump(config_dict, sort_keys=False)
+
+                md_content = f"---\n{md_config}---\n{formatted_text}"
+
+                self.repo.create_file(
+                    path=f"{file_path}-{'_'.join(media_group)}.md",
+                    message=f"Add {title} for {', '.join(media_group)}",
+                    content=md_content,
+                    branch=branch_name,
+                )
 
         pr_title = f"Update from {self.item_type}: {link}"
         pr_body = (
