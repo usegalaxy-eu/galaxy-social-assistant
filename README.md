@@ -1,4 +1,4 @@
-# Galaxy Social Assistent
+# Galaxy Social Assistant
 
 ## About
 
