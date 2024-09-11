@@ -9,7 +9,7 @@ on:
       days:
         description: "Number of days before today to check for new feeds"
         required: false
-        default: "5"
+        default: "14"
 
 jobs:
   feed-bot:
@@ -44,5 +44,5 @@ jobs:
         env:
           GALAXY_SOCIAL_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
           REPO: "usegalaxy-eu/galaxy-social"
-          DAYS: ${{ github.event.inputs.days || '5' }}
+          DAYS: ${{ github.event.inputs.days || '14' }}
         run: python -u app/feed_bot.py
