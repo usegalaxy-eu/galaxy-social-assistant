@@ -46,3 +46,12 @@ jobs:
           REPO: "usegalaxy-eu/galaxy-social"
           DAYS: ${{ github.event.inputs.days || '14' }}
         run: python -u app/feed_bot.py
+
+  keepalive-job:
+    name: Keepalive Workflow
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gautamkrishnar/keepalive-workflow@v2
