@@ -40,6 +40,46 @@ feeds:
         - EOSC
         - EuroScienceGateway
 
+json_feeds:
+  - title: "Galaxy Events"
+    url: https://galaxyproject.org/events/feed.json
+    list_key: "events"
+    format: "- {title}\n- {date}\n- {link}"
+
+    media:
+      - group1:
+        - mastodon-eu-freiburg
+        - matrix-eu-announce
+        - linkedin-galaxyproject
+      - group2:
+        - bluesky-galaxyproject
+
+    mentions:
+      mastodon-eu-freiburg:
+        - galaxyproject@mstdn.science
+      bluesky-galaxyproject:
+        - galaxyproject.bsky.social
+
+    hashtags:
+      mastodon-eu-freiburg:
+        - UseGalaxy
+        - GalaxyProject
+        - UniFreiburg
+        - EOSC
+        - EuroScienceGateway
+      bluesky-galaxyproject:
+        - UseGalaxy
+        - GalaxyProject
+        - UniFreiburg
+        - EOSC
+        - EuroScienceGateway
+      linkedin-galaxyproject:
+        - UseGalaxy
+        - GalaxyProject
+        - UniFreiburg
+        - EOSC
+        - EuroScienceGateway
+
 # youtube_channels:
 #   - channel: "https://www.youtube.com/c/galaxyproject"
 #     format: "🎥 New YouTube Video Released!\n\n{title}\n\n🔗 Watch it now: {link}"

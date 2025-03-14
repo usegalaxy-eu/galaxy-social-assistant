@@ -51,10 +51,11 @@ class utils:
         ):
             self.existing_files.add(pr.title)
 
-        self.start_date = datetime.now().date() - timedelta(
-            days=int(os.environ.get("DAYS", 1))
-        )
-        print(f"Processing items since {self.start_date}.")
+        self.start_date = None
+        days = os.environ.get("DAYS")
+        if days:
+            self.start_date = datetime.now().date() - timedelta(days=int(days))
+            print(f"Processing items since {self.start_date}.")
 
     def process_entry(self, entry):
         title = entry.get("title")
@@ -66,9 +67,10 @@ class utils:
 
         file_path = f"{self.bot_path}/{rel_file_path}"
 
-        if date < self.start_date:
-            print(f"Skipping as it is older: {title}")
-            return False
+        if self.start_date:
+            if date < self.start_date:
+                print(f"Skipping as it is older: {title}")
+                return False
 
         if any(link in pr_title for pr_title in self.existing_files):
             print(f"Skipping as file already exists: {file_path} for {title}")
@@ -105,10 +107,14 @@ class utils:
                 )
 
         pr_title = f"Update from {self.item_type}: {link}"
+        update_date = (
+            f"Update since {self.start_date.strftime('%Y-%m-%d')}\n\n"
+            if self.start_date
+            else ""
+        )
         pr_body = (
             f"This PR is created automatically by a {self.item_type} bot.\n"
-            f"Update since {self.start_date.strftime('%Y-%m-%d')}\n\n"
-            f"Processed:\n[{title}]({link})"
+            f"{update_date}Processed:\n[{title}]({link})"
         )
 
         try:
