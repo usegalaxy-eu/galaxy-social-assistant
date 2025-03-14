@@ -47,7 +47,13 @@ def main():
             entry["link"] = protocol + url.split("/")[0] + path
 
             if entry.get("days_ago") > 0:
-                print(f"Skipping {entry.get('title')}")
+                print(f"Skipping {entry.get('title')} as it is past the date")
+                continue
+
+            if entry.get("days_ago") < -14:
+                print(
+                    f"Skipping {entry.get('title')} as it is more than 14 days till now"
+                )
                 continue
 
             formatted_text = format_string.format(**entry)
