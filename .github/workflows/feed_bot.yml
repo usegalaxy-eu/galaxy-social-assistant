@@ -51,7 +51,6 @@ jobs:
         env:
           GALAXY_SOCIAL_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
           REPO: "usegalaxy-eu/galaxy-social"
-          DAYS: ${{ github.event.inputs.days || '14' }}
         run: python -u app/json_bot.py
 
   keepalive-job:

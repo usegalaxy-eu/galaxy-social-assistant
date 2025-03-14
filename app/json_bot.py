@@ -46,6 +46,10 @@ def main():
                 protocol = "http://"
             entry["link"] = protocol + url.split("/")[0] + path
 
+            if entry.get("days_ago") > 0:
+                print(f"Skipping {entry.get('title')}")
+                continue
+
             formatted_text = format_string.format(**entry)
 
             entry_data = {
