@@ -1,7 +1,7 @@
 feeds:
   - url: https://galaxyproject.org/eu/feed.atom
 
-    format: "📝 New blog post Released!\n{summary}\n{link}\n{images}"
+    format: "{summary}\n{link}\n{images}"
 
     # Medias should get grouped if they need to be in same file or seperated
     # This is needed while in bluesky the characters are limited and we need
