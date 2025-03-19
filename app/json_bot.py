@@ -39,22 +39,26 @@ def main():
                 continue
             file_name = path.rstrip("/").split("/")[-1]
 
-            if "://" in url:
-                protocol = url.split("://")[0] + "://"
-                url = url.split("://")[1]
+            if "external_link" in entry:
+                entry["link"] = entry["external_link"]
             else:
-                protocol = "http://"
-            entry["link"] = protocol + url.split("/")[0] + path
+                if "://" in url:
+                    protocol = url.split("://")[0] + "://"
+                    url = url.split("://")[1]
+                else:
+                    protocol = "http://"
+                entry["link"] = protocol + url.split("/")[0] + path
 
-            if entry.get("days_ago") > 0:
-                print(f"Skipping {entry.get('title')} as it is past the date")
-                continue
+            if feed.get("list_key") == "events":
+                if entry.get("days_ago") > 0:
+                    print(f"Skipping {entry.get('title')} as it is past the date")
+                    continue
 
-            if entry.get("days_ago") < -14:
-                print(
-                    f"Skipping {entry.get('title')} as it is more than 14 days till now"
-                )
-                continue
+                if entry.get("days_ago") < -14:
+                    print(
+                        f"Skipping {entry.get('title')} as it is more than 14 days till now"
+                    )
+                    continue
 
             formatted_text = format_string.format(**entry)
 

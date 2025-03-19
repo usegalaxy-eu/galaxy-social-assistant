@@ -1,7 +1,8 @@
-feeds:
-  - url: https://galaxyproject.org/eu/feed.atom
-
-    format: "📝 New blog post Released!\n{link}\n\n{content}"
+json_feeds:
+  - title: Galaxy News
+    url: https://galaxyproject.org/news/feed.json
+    list_key: "news"
+    format: "{tease}\n{link}"
 
     # Medias should get grouped if they need to be in same file or seperated
     # This is needed while in bluesky the characters are limited and we need
@@ -40,7 +41,6 @@ feeds:
         - EOSC
         - EuroScienceGateway
 
-json_feeds:
   - title: "Galaxy Events"
     url: https://galaxyproject.org/events/feed.json
     list_key: "events"
