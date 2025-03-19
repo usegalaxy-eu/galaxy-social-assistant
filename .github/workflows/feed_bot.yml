@@ -1,4 +1,4 @@
-name: Create PR for RSS/Atom feeds
+name: Create PR for RSS/Atom or json feeds
 
 on:
   schedule:
@@ -40,12 +40,18 @@ jobs:
           owner: "usegalaxy-eu"
           repositories: "galaxy-social"
 
-      - name: Run python script
+      - name: Run python script for RSS/Atom feeds
         env:
           GALAXY_SOCIAL_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
           REPO: "usegalaxy-eu/galaxy-social"
           DAYS: ${{ github.event.inputs.days || '14' }}
         run: python -u app/feed_bot.py
+
+      - name: Run python script for json feeds
+        env:
+          GALAXY_SOCIAL_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
+          REPO: "usegalaxy-eu/galaxy-social"
+        run: python -u app/json_bot.py
 
   keepalive-job:
     name: Keepalive Workflow

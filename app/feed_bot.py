@@ -43,6 +43,12 @@ def main():
             # collapse 2 and more empty lines into one
             entry["content"] = re.sub(r"\n{3,}", "\n\n", entry["content"])
 
+            entry["images"] = ""
+            if "content" in entry:
+                entry["images"] = "\n".join(
+                    re.findall(r"!\[.*?\]\(.*?\)", entry["content"])
+                )
+
             formatted_text = format_string.format(**entry)
 
             entry_data = {
