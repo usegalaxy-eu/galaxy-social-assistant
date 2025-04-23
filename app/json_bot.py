@@ -27,9 +27,19 @@ def main():
         if feed.get("list_key") is None:
             raise ValueError(f"No list_key found in the file for feed {feed}")
 
+        subsites = feed.get("subsites")
+
         folder = feed.get("title").replace(" ", "_").lower()
         format_string = feed.get("format")
         for entry in feed_data.get(feed.get("list_key"), []):
+            if (
+                subsites
+                and isinstance(subsites, list)
+                and not any(subsite in entry.get("subsites") for subsite in subsites)
+            ):
+                print(f"Skipping {entry.get('title')} as it is not in the subsites")
+                continue
+
             date_entry = entry.get("date")
             published_date = parser.parse(date_entry).date()
 
