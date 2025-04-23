@@ -67,10 +67,9 @@ class utils:
 
         file_path = f"{self.bot_path}/{rel_file_path}"
 
-        if self.start_date:
-            if date < self.start_date:
-                print(f"Skipping as it is older: {title}")
-                return False
+        if self.start_date and date < self.start_date:
+            print(f"Skipping as it is older: {title}")
+            return False
 
         if any(link in pr_title for pr_title in self.existing_files):
             print(f"Skipping as file already exists: {file_path} for {title}")
