@@ -36,18 +36,12 @@ json_feeds:
         mastodon-galaxyproject:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
-          - EuroScienceGateway
         bluesky-galaxyproject:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
-          - EuroScienceGateway
         linkedin-galaxyproject:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
-          - EuroScienceGateway
       freiburg:
         mastodon-eu-freiburg:
           - UniFreiburg
@@ -86,18 +80,12 @@ json_feeds:
         mastodon-galaxyproject:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
-          - EuroScienceGateway
         bluesky-galaxyproject:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
-          - EuroScienceGateway
         linkedin-galaxyproject:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
-          - EuroScienceGateway
       freiburg:
         mastodon-eu-freiburg:
           - UniFreiburg
