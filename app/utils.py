@@ -83,27 +83,24 @@ class utils:
             sha=self.repo.get_branch("main").commit.sha,
         )
 
-        for media_group in config.get("media", []):
-            conf_media = list(media_group.values())[0]
-            if isinstance(conf_media, list):
-                config_dict = {"media": conf_media}
-                for key in ["mentions", "hashtags"]:
-                    for media in conf_media:
-                        if config.get(key) and config[key].get(media):
-                            if key not in config_dict:
-                                config_dict[key] = {}
-                            config_dict[key][media] = config[key][media]
+        for group_name, media_list in config.get("media", {}).items():
+            config_dict = {"media": media_list}
+            for key in ["mentions", "hashtags"]:
+                for media in media_list:
+                    if config.get(key) and config[key].get(media):
+                        if key not in config_dict:
+                            config_dict[key] = {}
+                        config_dict[key][media] = config[key][media]
 
-                md_config = yaml.dump(config_dict, sort_keys=False)
+            md_config = yaml.dump(config_dict, sort_keys=False)
+            md_content = f"---\n{md_config}---\n{formatted_text}"
 
-                md_content = f"---\n{md_config}---\n{formatted_text}"
-
-                self.repo.create_file(
-                    path=f"{file_path}-{'_'.join(media_group)}.md",
-                    message=f"Add {title} for {', '.join(media_group)}",
-                    content=md_content,
-                    branch=branch_name,
-                )
+            self.repo.create_file(
+                path=f"{file_path}-{group_name}.md",
+                message=f"Add {title} for {', '.join(media_list)}",
+                content=md_content,
+                branch=branch_name,
+            )
 
         pr_title = f"Update from {self.item_type}: {link}"
         update_date = (
