@@ -23,9 +23,10 @@ class utils:
         if configs is None:
             raise ValueError("No config found in the file")
 
-        self.list = configs.get(self.item_type)
-        if self.list is None:
-            raise ValueError(f"No {self.item_type} found in the config file")
+        self.list = configs.get(self.item_type, [])
+        if not self.list:
+            print(f"No {self.item_type} found in the config file")
+            return
 
         errors = []
         for item in self.list:
