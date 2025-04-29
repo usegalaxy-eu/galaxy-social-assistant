@@ -7,6 +7,7 @@ This bot automatically creates posts on Galaxy Social by adding pull requests to
 ## Currently Supported Inputs
 
 * RSS and Atom feeds
+* JSON feeds from Galaxy Project
 * YouTube
 * Citations from Zotero
 
