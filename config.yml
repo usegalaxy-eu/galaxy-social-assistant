@@ -1,44 +1,114 @@
-feeds:
-  - url: https://galaxyproject.org/eu/feed.atom
-
-    format: "📝 New blog post Released!\n{link}\n\n{content}"
+json_feeds:
+  - title: Galaxy News
+    url: https://galaxyproject.org/news/feed.json
+    list_key: "news"
+    format: "{tease}\n{link}"
 
     # Medias should get grouped if they need to be in same file or seperated
     # This is needed while in bluesky the characters are limited and we need
     # it to be seperated from the the main file to edit it seperately
     media:
-      - group1:
-        - mastodon-eu-freiburg
+      global:
+        group1:
+          - linkedin-galaxyproject
+        group2:
+          - bluesky-galaxyproject
+      eu:
         - matrix-eu-announce
-        - linkedin-galaxyproject
-      - group2:
-        - bluesky-galaxyproject
+        - mastodon-eu-freiburg
+      us:
+        - mastodon-galaxyproject
 
     mentions:
-      mastodon-eu-freiburg:
-        - galaxyproject@mstdn.science
-      bluesky-galaxyproject:
-        - galaxyproject.bsky.social
+      all:
+        mastodon-eu-freiburg:
+          - galaxyproject@mstdn.science
+        mastodon-galaxyproject:
+          - galaxyfreiburg@bawü.social
 
     hashtags:
-      mastodon-eu-freiburg:
-        - UseGalaxy
-        - GalaxyProject
-        - UniFreiburg
-        - EOSC
-        - EuroScienceGateway
-      bluesky-galaxyproject:
-        - UseGalaxy
-        - GalaxyProject
-        - UniFreiburg
-        - EOSC
-        - EuroScienceGateway
-      linkedin-galaxyproject:
-        - UseGalaxy
-        - GalaxyProject
-        - UniFreiburg
-        - EOSC
-        - EuroScienceGateway
+      all:
+        mastodon-eu-freiburg:
+          - UseGalaxy
+          - GalaxyProject
+          - EOSC
+          - EuroScienceGateway
+        mastodon-galaxyproject:
+          - UseGalaxy
+          - GalaxyProject
+        bluesky-galaxyproject:
+          - UseGalaxy
+          - GalaxyProject
+        linkedin-galaxyproject:
+          - UseGalaxy
+          - GalaxyProject
+      eu:
+        bluesky-galaxyproject:
+          - EOSC
+          - EuroScienceGateway
+        mastodon-galaxyproject:
+          - EOSC
+          - EuroScienceGateway
+        linkedin-galaxyproject:
+          - EOSC
+          - EuroScienceGateway
+      freiburg:
+        mastodon-eu-freiburg:
+          - UniFreiburg
+
+  - title: "Galaxy Events"
+    url: https://galaxyproject.org/events/feed.json
+    list_key: "events"
+    format: "- {title}\n- {date}\n- {link}"
+
+    media:
+      global:
+        group1:
+          - linkedin-galaxyproject
+        group2:
+          - bluesky-galaxyproject
+      eu:
+        - mastodon-eu-freiburg
+        - matrix-eu-announce
+      us:
+        - mastodon-galaxyproject
+
+    mentions:
+      all:
+        mastodon-eu-freiburg:
+          - galaxyproject@mstdn.science
+        mastodon-galaxyproject:
+          - galaxyfreiburg@bawü.social
+
+    hashtags:
+      all:
+        mastodon-eu-freiburg:
+          - UseGalaxy
+          - GalaxyProject
+          - EOSC
+          - EuroScienceGateway
+        mastodon-galaxyproject:
+          - UseGalaxy
+          - GalaxyProject
+        bluesky-galaxyproject:
+          - UseGalaxy
+          - GalaxyProject
+        linkedin-galaxyproject:
+          - UseGalaxy
+          - GalaxyProject
+      eu:
+        bluesky-galaxyproject:
+          - EOSC
+          - EuroScienceGateway
+        mastodon-galaxyproject:
+          - EOSC
+          - EuroScienceGateway
+        linkedin-galaxyproject:
+          - EOSC
+          - EuroScienceGateway
+      freiburg:
+        mastodon-eu-freiburg:
+          - UniFreiburg
 
 # youtube_channels:
 #   - channel: "https://www.youtube.com/c/galaxyproject"

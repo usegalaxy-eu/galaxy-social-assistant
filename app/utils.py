@@ -45,16 +45,17 @@ class utils:
         g = Github(access_token)
         self.repo = g.get_repo(repo_name)
 
-        self.existing_files = set()
-        for pr in g.search_issues(
+        self.existing_prs = g.search_issues(
             f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
-        ):
-            self.existing_files.add(pr.title)
-
-        self.start_date = datetime.now().date() - timedelta(
-            days=int(os.environ.get("DAYS", 1))
         )
-        print(f"Processing items since {self.start_date}.")
+
+        self.start_date = None
+        days = os.environ.get("DAYS")
+        if days:
+            self.start_date = datetime.now().date() - timedelta(days=int(days))
+            print(f"Processing items since {self.start_date}.")
+
+        self.update_existing_pr = os.environ.get("UPDATE", "false").lower() == "true"
 
     def process_entry(self, entry):
         title = entry.get("title")
@@ -66,63 +67,99 @@ class utils:
 
         file_path = f"{self.bot_path}/{rel_file_path}"
 
-        if date < self.start_date:
+        if self.start_date and date < self.start_date:
             print(f"Skipping as it is older: {title}")
             return False
 
-        if any(link in pr_title for pr_title in self.existing_files):
-            print(f"Skipping as file already exists: {file_path} for {title}")
-            return False
-
-        print(f"Processing {file_path} from {title}")
-
-        branch_name = f"{file_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        self.repo.create_git_ref(
-            ref=f"refs/heads/{branch_name}",
-            sha=self.repo.get_branch("main").commit.sha,
+        existing_pr_issue = next(
+            (pr for pr in self.existing_prs if link in pr.title),
+            None,
         )
+        existing_files = []
+        if existing_pr_issue:
+            if self.update_existing_pr and existing_pr_issue.state == "open":
+                print(f"Updating existing PR for {title}")
+                existing_pr = existing_pr_issue.as_pull_request()
+                branch_name = existing_pr.head.ref
+                existing_files = existing_pr.get_files()
+            else:
+                print(f"Skipping as file already exists: {file_path} for {title}")
+                return False
+        else:
+            print(f"Processing {file_path} from {title}")
+            branch_name = (
+                f"{file_path}-update-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            )
+            self.repo.create_git_ref(
+                ref=f"refs/heads/{branch_name}",
+                sha=self.repo.get_branch("main").commit.sha,
+            )
 
-        for media_group in config.get("media", []):
-            conf_media = list(media_group.values())[0]
-            if isinstance(conf_media, list):
-                config_dict = {"media": conf_media}
-                for key in ["mentions", "hashtags"]:
-                    for media in conf_media:
-                        if config.get(key) and config[key].get(media):
-                            if key not in config_dict:
-                                config_dict[key] = {}
-                            config_dict[key][media] = config[key][media]
+        for group_name, media_list in config.get("media", {}).items():
+            config_dict = {"media": media_list}
+            for key in ["mentions", "hashtags"]:
+                for media in media_list:
+                    if config.get(key) and config[key].get(media):
+                        if key not in config_dict:
+                            config_dict[key] = {}
+                        config_dict[key][media] = config[key][media]
 
-                md_config = yaml.dump(config_dict, sort_keys=False)
+            md_config = yaml.dump(config_dict, sort_keys=False)
+            md_content = f"---\n{md_config}---\n{formatted_text}"
 
-                md_content = f"---\n{md_config}---\n{formatted_text}"
-
+            for existing_file in existing_files:
+                existing_filename = existing_file.filename
+                if group_name in existing_filename:
+                    file_on_repo = self.repo.get_contents(
+                        existing_filename, ref=branch_name
+                    )
+                    current_content = file_on_repo.decoded_content.decode("utf-8")
+                    if current_content.strip() != md_content.strip():
+                        self.repo.update_file(
+                            path=existing_filename,
+                            message=f"Update {title} for {', '.join(media_list)}",
+                            content=md_content,
+                            sha=existing_file.sha,
+                            branch=branch_name,
+                        )
+                        print(f"Updated existing file: {existing_filename} for {title}")
+                    else:
+                        print(
+                            f"No change detected in {existing_filename}, skipping update."
+                        )
+                    break
+            else:
                 self.repo.create_file(
-                    path=f"{file_path}-{'_'.join(media_group)}.md",
-                    message=f"Add {title} for {', '.join(media_group)}",
+                    path=f"{file_path}-{group_name}.md",
+                    message=f"Add {title} for {', '.join(media_list)}",
                     content=md_content,
                     branch=branch_name,
                 )
 
-        pr_title = f"Update from {self.item_type}: {link}"
-        pr_body = (
-            f"This PR is created automatically by a {self.item_type} bot.\n"
-            f"Update since {self.start_date.strftime('%Y-%m-%d')}\n\n"
-            f"Processed:\n[{title}]({link})"
-        )
+        if not existing_files:
+            pr_title = f"Update from {self.item_type}: {link}"
+            update_date = (
+                f"Update since {self.start_date.strftime('%Y-%m-%d')}\n\n"
+                if self.start_date
+                else ""
+            )
+            pr_body = (
+                f"This PR is created automatically by a {self.item_type} bot.\n"
+                f"{update_date}Processed:\n[{title}]({link})"
+            )
 
-        try:
-            pr = self.repo.create_pull(
-                title=pr_title,
-                body=pr_body,
-                base="main",
-                head=branch_name,
-            )
-            print(f"PR created: {pr.html_url}")
-            return True
-        except GithubException as e:
-            self.repo.get_git_ref(f"heads/{branch_name}").delete()
-            print(
-                f"Error in creating PR: {e.data.get('errors')[0].get('message')}\nRemoving branch {branch_name}"
-            )
-            return False
+            try:
+                pr = self.repo.create_pull(
+                    title=pr_title,
+                    body=pr_body,
+                    base="main",
+                    head=branch_name,
+                )
+                print(f"PR created: {pr.html_url}")
+                return True
+            except GithubException as e:
+                self.repo.get_git_ref(f"heads/{branch_name}").delete()
+                print(
+                    f"Error in creating PR: {e.data.get('errors')[0].get('message')}\nRemoving branch {branch_name}"
+                )
+                return False

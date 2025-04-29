@@ -1,4 +1,4 @@
-name: Create PR for RSS/Atom feeds
+name: Create PR for RSS/Atom or json feeds
 
 on:
   schedule:
@@ -10,6 +10,10 @@ on:
         description: "Number of days before today to check for new feeds"
         required: false
         default: "14"
+      update:
+        description: "Update the open PRs with new json formats"
+        required: false
+        type: boolean
 
 jobs:
   feed-bot:
@@ -40,12 +44,19 @@ jobs:
           owner: "usegalaxy-eu"
           repositories: "galaxy-social"
 
-      - name: Run python script
+      - name: Run python script for RSS/Atom feeds
         env:
           GALAXY_SOCIAL_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
           REPO: "usegalaxy-eu/galaxy-social"
           DAYS: ${{ github.event.inputs.days || '14' }}
         run: python -u app/feed_bot.py
+
+      - name: Run python script for json feeds
+        env:
+          GALAXY_SOCIAL_BOT_TOKEN: ${{ steps.generate-token.outputs.token }}
+          REPO: "usegalaxy-eu/galaxy-social"
+          UPDATE: ${{ github.event.inputs.update || 'false' }}
+        run: python -u app/json_bot.py
 
   keepalive-job:
     name: Keepalive Workflow
@@ -53,5 +64,12 @@ jobs:
     permissions:
       actions: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: gautamkrishnar/keepalive-workflow@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Keep the repository alive
+        run: |
+          echo "Keep-alive job executed at $(date)" > keepalive.log
+          git add keepalive.log
+          git commit -m "Update keepalive log"
+          git push
