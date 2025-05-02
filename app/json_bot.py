@@ -1,5 +1,6 @@
 import json
 import os
+from urllib.parse import urlsplit
 
 import requests
 from dateutil import parser
@@ -52,12 +53,11 @@ def main():
             if "external_url" in entry:
                 entry["link"] = entry["external_url"]
             else:
-                protocol, new_url = (
-                    url.split("://", 1) if "://" in url else ("http", url)
-                )
-                domain = new_url.split("/", 1)[0]
-                path = f"/{path.lstrip('/')}"
-                entry["link"] = f"{protocol}://{domain}{path}"
+                parsed_url = urlsplit(url)
+                protocol = parsed_url.scheme or "http"
+                domain = parsed_url.netloc or parsed_url.path.split("/")[0]
+                normalized_path = f"/{path.lstrip('/')}"
+                entry["link"] = f"{protocol}://{domain}{normalized_path}"
 
             if feed_list_key == "events":
                 if entry.get("days_ago") > 0:
