@@ -46,10 +46,6 @@ class utils:
         g = Github(access_token)
         self.repo = g.get_repo(repo_name)
 
-        self.existing_prs = g.search_issues(
-            f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
-        )
-
         self.start_date = None
         days = os.environ.get("DAYS")
         if days:
@@ -57,6 +53,16 @@ class utils:
             print(f"Processing items since {self.start_date}.")
 
         self.update_existing_pr = os.environ.get("UPDATE", "false").lower() == "true"
+        if self.update_existing_pr:
+            # Use self.repo.get_pulls to fetch all pull requests directly from the repository
+            # when update mode is enabled, as it provides detailed PR information.
+            self.existing_prs = self.repo.get_pulls(state="all", base="main")
+        else:
+            # Use g.search_issues to search for pull requests when not in update mode,
+            # as we only need to check for existing PRs based on the bot path and pr title.
+            self.existing_prs = g.search_issues(
+                f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
+            )
 
     def process_entry(self, entry):
         title = entry.get("title")
@@ -72,17 +78,17 @@ class utils:
             print(f"Skipping as it is older: {title}")
             return False
 
-        existing_pr_issue = next(
-            (pr for pr in self.existing_prs if link in pr.title),
-            None,
-        )
+        existing_pr_issue = None
+        for pr in self.existing_prs:
+            if link.lower() in pr.title.lower():
+                existing_pr_issue = pr
+                break
         existing_files = []
         if existing_pr_issue:
             if self.update_existing_pr and existing_pr_issue.state == "open":
                 print(f"Updating existing PR for {title}")
-                existing_pr = existing_pr_issue.as_pull_request()
-                branch_name = existing_pr.head.ref
-                existing_files = existing_pr.get_files()
+                branch_name = existing_pr_issue.head.ref
+                existing_files = existing_pr_issue.get_files()
             else:
                 print(f"Skipping as file already exists: {file_path} for {title}")
                 return False
