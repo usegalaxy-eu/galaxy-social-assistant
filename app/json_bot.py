@@ -52,13 +52,12 @@ def main():
             if "external_url" in entry:
                 entry["link"] = entry["external_url"]
             else:
-                if "://" in url:
-                    protocol = url.split("://")[0] + "://"
-                    url = url.split("://")[1]
-                else:
-                    protocol = "http://"
-                path = path if path.startswith("/") else f"/{path}"
-                entry["link"] = protocol + url.split("/")[0] + path
+                protocol, new_url = (
+                    url.split("://", 1) if "://" in url else ("http", url)
+                )
+                domain = new_url.split("/", 1)[0]
+                path = f"/{path.lstrip('/')}"
+                entry["link"] = f"{protocol}://{domain}{path}"
 
             if feed_list_key == "events":
                 if entry.get("days_ago") > 0:
