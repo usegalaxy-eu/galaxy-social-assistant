@@ -64,14 +64,23 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Keep the repository alive
         run: |
-          echo "Keep-alive job executed at $(date)" > keepalive.log
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin keepalive; then
+            git fetch origin keepalive
+            git checkout keepalive
+          else
+            git switch --orphan keepalive
+            git rm -rf . || true
+          fi
+
+          echo "Keep-alive job executed at $(date)" > keepalive.log
           git add -f keepalive.log
           git commit -m "Update keepalive log"
-          git push
+          git push origin keepalive
