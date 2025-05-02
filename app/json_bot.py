@@ -49,8 +49,8 @@ def main():
                 continue
             file_name = path.rstrip("/").split("/")[-1]
 
-            if "external_link" in entry:
-                entry["link"] = entry["external_link"]
+            if "external_url" in entry:
+                entry["link"] = entry["external_url"]
             else:
                 if "://" in url:
                     protocol = url.split("://")[0] + "://"
