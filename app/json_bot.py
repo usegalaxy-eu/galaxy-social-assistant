@@ -50,14 +50,12 @@ def main():
                 continue
             file_name = path.rstrip("/").split("/")[-1]
 
-            if "external_url" in entry:
-                entry["link"] = entry["external_url"]
-            else:
-                parsed_url = urlsplit(url)
-                protocol = parsed_url.scheme or "http"
-                domain = parsed_url.netloc or parsed_url.path.split("/")[0]
-                normalized_path = f"/{path.lstrip('/')}"
-                entry["link"] = f"{protocol}://{domain}{normalized_path}"
+            parsed_url = urlsplit(url)
+            protocol = parsed_url.scheme or "http"
+            domain = parsed_url.netloc or parsed_url.path.split("/")[0]
+            normalized_path = f"/{path.lstrip('/')}"
+            link = f"{protocol}://{domain}{normalized_path}"
+            entry["link"] = entry.get("external_url", link)
 
             if feed_list_key == "events":
                 if entry.get("days_ago") > 0:
@@ -109,7 +107,7 @@ def main():
                 "date": published_date,
                 "rel_file_path": f"{folder}/{file_name}",
                 "formatted_text": formatted_text,
-                "link": entry.get("link"),
+                "link": link,
             }
             utils_obj.process_entry(entry_data)
 
