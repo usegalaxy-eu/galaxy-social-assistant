@@ -21,7 +21,7 @@ def main():
             print(f"Error in parsing feed {feed.get('url')}: {e}")
             continue
 
-        folder = feed_data.feed.title.replace(" ", "_").lower()
+        folder = feed.get("title", feed_data.feed.title).replace(" ", "_").lower()
         format_string = feed.get("format")
         for entry in feed_data.entries:
             date_entry = (
@@ -29,14 +29,18 @@ def main():
             )
             published_date = parser.isoparse(date_entry).date()
 
-            if entry.link is None:
-                print(f"No link found: {entry.title}")
+            if entry.get("link") is None:
+                print(f"No link found: {entry.get('title')}")
                 continue
 
-            file_name = entry.link.split("/")[-1] or entry.link.split("/")[-2]
+            file_name = (
+                os.path.splitext(os.path.basename(entry.link.rstrip("/")))[0]
+                or entry.link.split("/")[-1]
+                or entry.link.split("/")[-2]
+            )
 
             entry["content"] = (
-                markdownify(entry.content[0].value).strip()
+                markdownify(entry.get("content", [])[0].value).strip()
                 if "content" in entry
                 else ""
             )
@@ -48,16 +52,20 @@ def main():
                 entry["images"] = "\n".join(
                     re.findall(r"!\[.*?\]\(.*?\)", entry["content"])
                 )
+            for media in entry.get("media_content", []):
+                if media.get("medium") == "image":
+                    entry["images"] += f"\n![image]({media['url']})"
 
             formatted_text = format_string.format(**entry)
 
             entry_data = {
-                "title": entry.title,
+                "title": entry.get("title"),
                 "config": feed,
                 "date": published_date,
                 "rel_file_path": f"{folder}/{file_name}",
                 "formatted_text": formatted_text,
                 "link": entry.link,
+                "external_url": entry.get("external_url"),
             }
             utils_obj.process_entry(entry_data)
 

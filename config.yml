@@ -1,3 +1,28 @@
+feeds:
+  - title: GTN News
+    url: https://training.galaxyproject.org/training-material/feed.xml
+    format: "{summary}\n{link}"
+
+    media:
+      - linkedin-galaxyproject
+
+    hashtags:
+      linkedin-galaxyproject:
+        - UseGalaxy
+        - GalaxyProject
+
+  - title: GTN Events
+    url: https://training.galaxyproject.org/training-material/events/feed.xml
+    format: "{title}\n{link}"
+
+    media:
+      - linkedin-galaxyproject
+
+    hashtags:
+      linkedin-galaxyproject:
+        - UseGalaxy
+        - GalaxyProject
+
 json_feeds:
   - title: Galaxy News
     url: https://galaxyproject.org/news/feed.json
