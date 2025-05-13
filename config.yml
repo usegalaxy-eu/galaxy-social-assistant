@@ -14,6 +14,9 @@ feeds:
   - title: GTN Events
     url: https://training.galaxyproject.org/training-material/events/feed.xml
     format: "{title}\n{link}"
+    # This is a special case where we want to exclude the events having event-external tag
+    excluded_tags:
+      - "event-external"
 
     media:
       - linkedin-galaxyproject
