@@ -71,6 +71,7 @@ class utils:
         rel_file_path = entry.get("rel_file_path")
         formatted_text = entry.get("formatted_text")
         link = entry.get("link")
+        external_url = entry.get("external_url")
 
         file_path = f"{self.bot_path}/{rel_file_path}"
 
@@ -80,9 +81,16 @@ class utils:
 
         existing_pr_issue = None
         for pr in self.existing_prs:
-            if link.lower() in pr.title.lower():
-                existing_pr_issue = pr
+            pr_title = pr.title.lower()
+            for url in [link, external_url]:
+                if isinstance(url, str):
+                    url = url.strip().lower()
+                    if url and url in pr_title:
+                        existing_pr_issue = pr
+                        break
+            if existing_pr_issue:
                 break
+
         existing_files = []
         if existing_pr_issue:
             if self.update_existing_pr and existing_pr_issue.state == "open":
