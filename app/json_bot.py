@@ -33,8 +33,8 @@ def main():
         folder = feed_title.replace(" ", "_").lower()
         format_string = feed.get("format")
         media_data = feed.get("media")
-        mentions_data = feed.get("mentions")
-        hashtags_data = feed.get("hashtags")
+        mentions_data = feed.get("mentions", {})
+        hashtags_data = feed.get("hashtags", {})
 
         for entry in feed_data.get(feed_list_key, []):
             entry_subsites = entry.get("subsites")
