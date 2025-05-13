@@ -21,6 +21,7 @@ def main():
             print(f"Error in parsing feed {feed.get('url')}: {e}")
             continue
 
+        excluded_tags = feed.get("excluded_tags", [])
         folder = feed.get("title", feed_data.feed.title).replace(" ", "_").lower()
         format_string = feed.get("format")
         for entry in feed_data.entries:
@@ -31,6 +32,10 @@ def main():
 
             if entry.get("link") is None:
                 print(f"No link found: {entry.get('title')}")
+                continue
+
+            if any(tag.get("term") in excluded_tags for tag in entry.get("tags", [])):
+                print(f"Skipping {entry.get('title')} as it is in the excluded tags")
                 continue
 
             file_name = (
