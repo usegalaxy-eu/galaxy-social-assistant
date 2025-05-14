@@ -1,9 +1,11 @@
 import json
 import os
+import re
 from urllib.parse import urlsplit
 
 import requests
 from dateutil import parser
+from markdownify import markdownify
 from utils import utils
 
 
@@ -66,6 +68,17 @@ def main():
                         f"Skipping {entry.get('title')} as it is more than 14 days till now"
                     )
                     continue
+
+            entry["content"] = (
+                markdownify(entry.get("content")).strip() if "content" in entry else ""
+            )
+            entry["content"] = re.sub(r"\n{3,}", "\n\n", entry["content"])
+
+            entry["images"] = ""
+            if "content" in entry:
+                entry["images"] = "\n".join(
+                    re.findall(r"!\[.*?\]\(.*?\)", entry["content"])
+                )
 
             formatted_text = format_string.format(**entry)
 
