@@ -55,7 +55,7 @@ def main():
             domain = parsed_url.netloc or parsed_url.path.split("/")[0]
             normalized_path = f"/{path.lstrip('/')}"
             link = f"{protocol}://{domain}{normalized_path}"
-            entry["link"] = entry.get("external_url", link)
+            entry["link"] = entry.get("external_url") or link
 
             if feed_list_key == "events":
                 if entry.get("days_ago") > 0:
