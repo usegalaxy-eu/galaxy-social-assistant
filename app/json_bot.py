@@ -80,6 +80,8 @@ def main():
                     re.findall(r"!\[.*?\]\(.*?\)", entry["content"])
                 )
 
+            entry["location"] = entry.get("location", {}).get("name") or ""
+
             formatted_text = format_string.format(**entry)
 
             new_media = {}

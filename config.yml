@@ -64,7 +64,7 @@ json_feeds:
   - title: "Galaxy Events"
     url: https://galaxyproject.org/events/feed.json
     list_key: "events"
-    format: "📣 {title}\n\n{tease}\n\n📅 {date}\n🔗 More info & registration: {link}\n\n{images}"
+    format: "📣 {title}\n\n{tease}\n\n📍 {location}\n📅 {date}\n🔗 More info & registration: {link}\n\n{images}"
 
     media:
       global:
