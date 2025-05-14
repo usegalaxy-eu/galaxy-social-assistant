@@ -72,7 +72,6 @@ def main():
             entry["content"] = (
                 markdownify(entry.get("content")).strip() if "content" in entry else ""
             )
-            entry["content"] = re.sub(r"\n{3,}", "\n\n", entry["content"])
 
             entry["images"] = ""
             if "content" in entry:
@@ -83,6 +82,7 @@ def main():
             entry["location"] = entry.get("location", {}).get("name") or ""
 
             formatted_text = format_string.format(**entry)
+            formatted_text = re.sub(r"\n{3,}", "\n\n", formatted_text).strip()
 
             new_media = {}
             for subsite, content in media_data.items():
