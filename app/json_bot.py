@@ -1,9 +1,11 @@
 import json
 import os
+import re
 from urllib.parse import urlsplit
 
 import requests
 from dateutil import parser
+from markdownify import markdownify
 from utils import utils
 
 
@@ -67,7 +69,20 @@ def main():
                     )
                     continue
 
+            entry["content"] = (
+                markdownify(entry.get("content")).strip() if "content" in entry else ""
+            )
+
+            entry["images"] = ""
+            if "content" in entry:
+                entry["images"] = "\n".join(
+                    re.findall(r"!\[.*?\]\(.*?\)", entry["content"])
+                )
+
+            entry["location"] = entry.get("location", {}).get("name") or ""
+
             formatted_text = format_string.format(**entry)
+            formatted_text = re.sub(r"\n{3,}", "\n\n", formatted_text).strip()
 
             new_media = {}
             for subsite, content in media_data.items():
