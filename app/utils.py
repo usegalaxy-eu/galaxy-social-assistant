@@ -144,16 +144,8 @@ class utils:
                 )
 
         if not existing_files:
-            pr_title = f"Update from {self.item_type}: {link}"
-            update_date = (
-                f"Update since {self.start_date.strftime('%Y-%m-%d')}\n\n"
-                if self.start_date
-                else ""
-            )
-            pr_body = (
-                f"This PR is created automatically by a {self.item_type} bot.\n"
-                f"{update_date}Processed:\n[{title}]({link})"
-            )
+            pr_title = f"📢 New Post: {link}"
+            pr_body = f"🤖 New post added [{title}]({link})"
 
             try:
                 pr = self.repo.create_pull(
