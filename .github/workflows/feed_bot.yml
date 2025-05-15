@@ -2,7 +2,7 @@ name: Create PR for RSS/Atom or json feeds
 
 on:
   schedule:
-    - cron: "00 00 * * *"
+    - cron: "0 0,8,16 * * *"
 
   workflow_dispatch:
     inputs:
