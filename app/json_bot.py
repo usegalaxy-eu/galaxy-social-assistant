@@ -4,6 +4,7 @@ import re
 from urllib.parse import urlsplit
 
 import requests
+from bs4 import BeautifulSoup
 from dateutil import parser
 from markdownify import markdownify
 from utils import utils
@@ -55,8 +56,8 @@ def main():
             parsed_url = urlsplit(url)
             protocol = parsed_url.scheme or "http"
             domain = parsed_url.netloc or parsed_url.path.split("/")[0]
-            normalized_path = f"/{path.lstrip('/')}"
-            link = f"{protocol}://{domain}{normalized_path}"
+            base_url = f"{protocol}://{domain}"
+            link = f"{base_url}/{path.lstrip('/')}"
             entry["link"] = entry.get("external_url") or link
 
             if feed_list_key == "events":
@@ -69,15 +70,24 @@ def main():
                     )
                     continue
 
-            entry["content"] = (
-                markdownify(entry.get("content")).strip() if "content" in entry else ""
-            )
+            content = entry.get("content", "").strip()
+            entry["content"] = markdownify(content)
 
-            entry["images"] = ""
-            if "content" in entry:
-                entry["images"] = "\n".join(
-                    re.findall(r"!\[.*?\]\(.*?\)", entry["content"])
-                )
+            soup = BeautifulSoup(content, "html.parser")
+            images = []
+            for img in soup.find_all("img"):
+                src = img.get("src")
+                if not src or src.startswith(("http", "data:")):
+                    continue
+                alt = img.get("alt", "")
+                img_url = f"{base_url}/{src.lstrip('/')}"
+                try:
+                    response = requests.head(img_url, timeout=5)
+                    response.raise_for_status()
+                except:
+                    continue
+                images.append(f"![{alt}]({img_url})")
+            entry["images"] = "\n".join(images)
 
             entry["location"] = entry.get("location", {}).get("name") or ""
 
