@@ -30,36 +30,46 @@ json_feeds:
       all:
         mastodon-eu-freiburg:
           - UseGalaxy
-          - GalaxyProject
           - EOSC
+          - NFDI
+          - unifreiburg
         mastodon-galaxyproject:
           - UseGalaxy
-          - GalaxyProject
         bluesky-galaxyproject:
           - UseGalaxy
-          - GalaxyProject
         linkedin-galaxyproject:
           - UseGalaxy
-          - GalaxyProject
       esg:
         mastodon-eu-freiburg:
           - EuroScienceGateway
+          - UseGalaxy
+          - EOSC
         mastodon-galaxyproject:
           - EuroScienceGateway
+          - UseGalaxy
+          - EOSC
         bluesky-galaxyproject:
           - EuroScienceGateway
+          - UseGalaxy
+          - EOSC
         linkedin-galaxyproject:
           - EuroScienceGateway
+          - UseGalaxy
+          - EOSC
       eu:
         bluesky-galaxyproject:
           - EOSC
+          - UseGalaxy
         mastodon-galaxyproject:
           - EOSC
+          - UseGalaxy
         linkedin-galaxyproject:
           - EOSC
+          - UseGalaxy
       freiburg:
         mastodon-eu-freiburg:
           - UniFreiburg
+          - UseGalaxy
 
   - title: "Galaxy Events"
     url: https://galaxyproject.org/events/feed.json
@@ -89,28 +99,25 @@ json_feeds:
       all:
         mastodon-eu-freiburg:
           - UseGalaxy
-          - GalaxyProject
           - EOSC
+          - NFDI
           - EuroScienceGateway
         mastodon-galaxyproject:
           - UseGalaxy
-          - GalaxyProject
         bluesky-galaxyproject:
           - UseGalaxy
-          - GalaxyProject
         linkedin-galaxyproject:
           - UseGalaxy
-          - GalaxyProject
       eu:
         bluesky-galaxyproject:
           - EOSC
           - EuroScienceGateway
         mastodon-galaxyproject:
           - EOSC
-          - EuroScienceGateway
+          - UseGalaxy
         linkedin-galaxyproject:
           - EOSC
-          - EuroScienceGateway
+          - UseGalaxy
       freiburg:
         mastodon-eu-freiburg:
           - UniFreiburg
