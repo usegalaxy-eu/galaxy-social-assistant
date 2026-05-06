@@ -1,8 +1,8 @@
-feedparser
-PyYAML
-PyGithub
-pytube
-python-dateutil
-pyzotero
-markdownify
-beautifulsoup4
+feedparser==6.0.12
+PyYAML==6.0.3
+PyGithub==2.9.1
+pytube==15.0.0
+python-dateutil==2.9.0.post0
+pyzotero==1.11.1
+markdownify==1.2.2
+beautifulsoup4==4.14.3
