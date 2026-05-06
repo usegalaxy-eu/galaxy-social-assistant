@@ -86,7 +86,13 @@ def main():
 
             entry["location"] = entry.get("location", {}).get("name") or ""
 
-            formatted_text = format_string.format(**entry)
+            safe_entry = {}
+            for key, value in entry.items():
+                if value is None:
+                    safe_entry[key] = ""
+                else:
+                    safe_entry[key] = value
+            formatted_text = format_string.format(**safe_entry)
             formatted_text = re.sub(r"\n{3,}", "\n\n", formatted_text).strip()
 
             new_media = {}
