@@ -4,7 +4,7 @@ json_feeds:
     list_key: "news"
     format: "{tease}\n{link}\n{images}"
 
-    # Medias should get grouped if they need to be in same file or seperated
+    # Medias should get grouped if they need to be in same file or separated
     # This is needed while in bluesky the characters are limited and we need
     # it to be seperated from the the main file to edit it seperately
     media:
@@ -13,6 +13,9 @@ json_feeds:
           - linkedin-galaxyproject
         group2:
           - bluesky-galaxyproject
+      all-eu:
+        - matrix-eu-announce
+        - mastodon-eu-freiburg
       eu:
         - matrix-eu-announce
         - mastodon-eu-freiburg
@@ -72,6 +75,9 @@ json_feeds:
           - linkedin-galaxyproject
         group2:
           - bluesky-galaxyproject
+      all-eu:
+        - matrix-eu-announce
+        - mastodon-eu-freiburg
       eu:
         - mastodon-eu-freiburg
         - matrix-eu-announce
