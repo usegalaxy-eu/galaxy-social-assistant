@@ -75,7 +75,7 @@ json_feeds:
           - linkedin-galaxyproject
         group2:
           - bluesky-galaxyproject
-      eu:
+      all-eu:
         - matrix-eu-announce
         - mastodon-eu-freiburg
       eu:
