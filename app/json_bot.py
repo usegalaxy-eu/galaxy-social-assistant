@@ -47,10 +47,8 @@ def main():
         for entry in feed_data.get(feed_list_key, []):
             entry_main_subsite = entry.get("main_subsite")
             if entry_main_subsite and entry_main_subsite not in mapped_subsites:
-                print(
-                    f"Skipping {entry.get('title')}: main_subsite {entry_main_subsite} not matching any configured media channels"
-                )
-                continue
+                # ignore main_subsite if feed config doesn't know about it
+                entry_main_subsite = None
             entry_subsites = entry.get("subsites")
             if not entry_main_subsite and not any(subsite in entry_subsites for subsite in mapped_subsites):
                 print(

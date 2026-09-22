@@ -9,6 +9,14 @@ json_feeds:
     # want to edit bluesky posts separately because their different character limit.
     media:
       group1:
+        linkedin-galaxyproject:
+          - global
+          - us
+      group2:
+        bluesky-galaxyproject:
+          - global
+          - us
+      group3:
         mastodon-galaxyproject:
           - global
           - us
@@ -19,14 +27,6 @@ json_feeds:
         matrix-eu-announce:
           - all-eu
           - eu
-      group2:
-        bluesky-galaxyproject:
-          - global
-          - us
-      group3:
-        linkedin-galaxyproject:
-          - global
-          - us
 
     # Media conflicts can be used to avoid unwanted double-posting. For every conflict,
     # the channel provided as the key, if selected, will prevent posting to all channels
@@ -92,6 +92,14 @@ json_feeds:
 
     media:
       group1:
+        linkedin-galaxyproject:
+          - global
+          - us
+      group2:
+        bluesky-galaxyproject:
+          - global
+          - us
+      group3:
         mastodon-galaxyproject:
           - global
           - us
@@ -102,14 +110,6 @@ json_feeds:
         matrix-eu-announce:
           - all-eu
           - eu
-      group2:
-        bluesky-galaxyproject:
-          - global
-          - us
-      group3:
-        linkedin-galaxyproject:
-          - global
-          - us
 
     media_conflicts:
       mastodon-galaxyproject:
