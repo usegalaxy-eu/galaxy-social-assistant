@@ -119,23 +119,25 @@ def main():
                         selected_channels.discard(conflicting)
             new_media = {}
             for group, channels in media_data.items():
-                selected_group_channels = set()
+                selected_group_channels = []
                 for channel in channels:
                     if channel in selected_channels:
-                        selected_group_channels.add(channel)
+                        selected_group_channels.append(channel)
                 if selected_group_channels:
-                    new_media[group] = list(selected_group_channels)
+                    new_media[group] = selected_group_channels
 
             def map_config(feed_config):
                 new_config = {}
                 for channel, config in feed_config.items():
                     if channel in selected_channels:
-                        channel_values = set()
+                        channel_values = []
                         for subsite, values in config.items():
                             if subsite == "all" or subsite in entry_subsites:
-                                channel_values.update(values)
+                                channel_values += [
+                                    v for v in values if v not in channel_values
+                                ]
                         if channel_values:
-                            new_config[channel] = list(channel_values)
+                            new_config[channel] = channel_values
                 return new_config
 
             json_config = {
