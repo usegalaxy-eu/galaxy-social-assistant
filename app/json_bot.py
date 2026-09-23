@@ -36,13 +36,24 @@ def main():
         folder = feed_title.replace(" ", "_").lower()
         format_string = feed.get("format")
         media_data = feed.get("media")
+        mapped_subsites = set()
+        for group, channel_data in media_data.items():
+            for subsites in channel_data.values():
+                mapped_subsites.update(subsites)
+        media_conflicts = feed.get("media_conflicts", {})
         mentions_data = feed.get("mentions")
         hashtags_data = feed.get("hashtags")
 
         for entry in feed_data.get(feed_list_key, []):
+            entry_main_subsite = entry.get("main_subsite")
+            if entry_main_subsite and entry_main_subsite not in mapped_subsites:
+                # ignore main_subsite if feed config doesn't know about it
+                entry_main_subsite = None
             entry_subsites = entry.get("subsites")
-            if not any(subsite in entry_subsites for subsite in media_data.keys()):
-                print(f"Skipping {entry.get('title')} as it is not in the subsites")
+            if not entry_main_subsite and not any(subsite in entry_subsites for subsite in mapped_subsites):
+                print(
+                    f"Skipping {entry.get('title')}: no match between subsites and configured media channels"
+                )
                 continue
 
             published_date = parser.parse(entry.get("date")).date()
@@ -60,10 +71,9 @@ def main():
             link = f"{base_url}/{path.lstrip('/')}"
             entry["link"] = entry.get("external_url") or link
 
-            if feed_list_key == "events":
-                if entry.get("days_ago") > 0:
-                    print(f"Skipping {entry.get('title')} as it is past the date")
-                    continue
+            if feed_list_key == "events" and entry.get("days_ago") > 0:
+                print(f"Skipping {entry.get('title')} as it is past the date")
+                continue
 
             content = entry.get("content", "").strip()
             entry["content"] = markdownify(content)
@@ -95,30 +105,37 @@ def main():
             formatted_text = format_string.format(**safe_entry)
             formatted_text = re.sub(r"\n{3,}", "\n\n", formatted_text).strip()
 
+            selected_channels = set()
+            effective_subsites = [entry_main_subsite] if entry_main_subsite else entry_subsites
+            for group, channels in media_data.items():
+                for channel, subsites in channels.items():
+                    if any(subsite in effective_subsites for subsite in subsites):
+                        selected_channels.add(channel)
+            for name, conflicting_names in media_conflicts.items():
+                if name in selected_channels:
+                    for conflicting in conflicting_names:
+                        selected_channels.discard(conflicting)
             new_media = {}
-            for subsite, content in media_data.items():
-                if subsite not in entry_subsites:
-                    continue
-                if isinstance(content, dict):
-                    for group_name, media_list in content.items():
-                        new_media[f"{subsite}_{group_name}"] = media_list
-                elif isinstance(content, list):
-                    new_media[subsite] = content
-
-            used_media_names = set()
-            for media_list in new_media.values():
-                used_media_names.update(media_list)
+            for group, channels in media_data.items():
+                selected_group_channels = []
+                for channel in channels:
+                    if channel in selected_channels:
+                        selected_group_channels.append(channel)
+                if selected_group_channels:
+                    new_media[group] = selected_group_channels
 
             def map_config(feed_config):
                 new_config = {}
-                feed_config_all = feed_config.get("all", {})
-                for media in used_media_names:
-                    if media in feed_config_all:
-                        new_config[media] = feed_config_all[media].copy()
-                for subsite in entry_subsites:
-                    for media, value in feed_config.get(subsite, {}).items():
-                        if media in used_media_names:
-                            new_config.setdefault(media, []).extend(value)
+                for channel, config in feed_config.items():
+                    if channel in selected_channels:
+                        channel_values = []
+                        for subsite, values in config.items():
+                            if subsite == "all" or subsite in entry_subsites:
+                                channel_values += [
+                                    v for v in values if v not in channel_values
+                                ]
+                        if channel_values:
+                            new_config[channel] = channel_values
                 return new_config
 
             json_config = {
@@ -135,6 +152,7 @@ def main():
                 "formatted_text": formatted_text,
                 "link": link,
             }
+
             utils_obj.process_entry(entry_data)
 
 
