@@ -36,6 +36,16 @@ json_feeds:
       mastodon-galaxyproject:
         - mastodon-eu-freiburg
 
+    # If a post specifies a main_subsite, the channels selected through it
+    # will not take part in the above conflict resolution, but can eliminate regular
+    # channels according to their own rules below.
+    # -> A channel selected through main_subsite will never be itself suppressed,
+    # but can suppress channels selected through regular subsites.
+
+    main_media_conflicts:
+      mastodon-eu-freiburg:
+        - mastodon-galaxyproject
+
     mentions:
       mastodon-galaxyproject:
         all-eu:
@@ -114,6 +124,10 @@ json_feeds:
     media_conflicts:
       mastodon-galaxyproject:
         - mastodon-eu-freiburg
+
+    main_media_conflicts:
+      mastodon-eu-freiburg:
+        - mastodon-galaxyproject
 
     mentions:
       mastodon-galaxyproject:

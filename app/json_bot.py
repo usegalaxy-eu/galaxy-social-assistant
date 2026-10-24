@@ -41,6 +41,7 @@ def main():
             for subsites in channel_data.values():
                 mapped_subsites.update(subsites)
         media_conflicts = feed.get("media_conflicts", {})
+        main_media_conflicts = feed.get("main_media_conflicts", {})
         mentions_data = feed.get("mentions")
         hashtags_data = feed.get("hashtags")
 
@@ -106,15 +107,35 @@ def main():
             formatted_text = re.sub(r"\n{3,}", "\n\n", formatted_text).strip()
 
             selected_channels = set()
-            effective_subsites = [entry_main_subsite] if entry_main_subsite else entry_subsites
+            main_channels = set()
+            if entry_main_subsite:
+                if "global" in entry_subsites:
+                    effective_subsites = ["global"]
+                else:
+                    effective_subsites = []
+            else:
+                effective_subsites = entry_subsites
             for group, channels in media_data.items():
                 for channel, subsites in channels.items():
                     if any(subsite in effective_subsites for subsite in subsites):
                         selected_channels.add(channel)
-            for name, conflicting_names in media_conflicts.items():
-                if name in selected_channels:
-                    for conflicting in conflicting_names:
-                        selected_channels.discard(conflicting)
+                    if entry_main_subsite and entry_main_subsite in subsites:
+                        main_channels.add(channel)
+            if main_channels:
+                # resolve conflicts between channels selected by main_subsite
+                # and regularly selected channels
+                for name, conflicting_names in main_media_conflicts.items():
+                    if name in main_channels:
+                        for conflicting in conflicting_names:
+                            selected_channels.discard(conflicting)
+            if selected_channels:
+                # resolve conflicts within remaining regularly selected channels
+                for name, conflicting_names in media_conflicts.items():
+                    if name in selected_channels:
+                        for conflicting in conflicting_names:
+                            selected_channels.discard(conflicting)
+            # add channels selected by main_subsite to others
+            selected_channels |= main_channels
             new_media = {}
             for group, channels in media_data.items():
                 selected_group_channels = []
