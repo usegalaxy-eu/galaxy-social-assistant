@@ -65,7 +65,6 @@ json_feeds:
         all:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
         esg:
           - EuroScienceGateway
         freiburg:
@@ -76,24 +75,18 @@ json_feeds:
           - GalaxyProject
         esg:
           - EuroScienceGateway
-        eu:
-          - EOSC
       bluesky-galaxyproject:
         all:
           - UseGalaxy
           - GalaxyProject
         esg:
           - EuroScienceGateway
-        eu:
-          - EOSC
       linkedin-galaxyproject:
         all:
           - UseGalaxy
           - GalaxyProject
         esg:
           - EuroScienceGateway
-        eu:
-          - EOSC
 
   - title: "Galaxy Events"
     url: https://galaxyproject.org/events/feed.json
@@ -148,7 +141,6 @@ json_feeds:
         all:
           - UseGalaxy
           - GalaxyProject
-          - EOSC
         esg:
           - EuroScienceGateway
         freiburg:
@@ -159,24 +151,18 @@ json_feeds:
           - GalaxyProject
         esg:
           - EuroScienceGateway
-        eu:
-          - EOSC
       bluesky-galaxyproject:
         all:
           - UseGalaxy
           - GalaxyProject
         esg:
           - EuroScienceGateway
-        eu:
-          - EOSC
       linkedin-galaxyproject:
         all:
           - UseGalaxy
           - GalaxyProject
         esg:
           - EuroScienceGateway
-        eu:
-          - EOSC
 
 # youtube_channels:
 #   - channel: "https://www.youtube.com/c/galaxyproject"
