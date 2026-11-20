@@ -14,16 +14,26 @@ HUB_CONTRIBUTORS_URL = "https://raw.githubusercontent.com/galaxyproject/galaxy-h
 
 
 def load_github_handles():
-    # Hub author ids are GitHub handles unless the contributor sets `github: false`
+    # Same rule as the Hub's getCommunityGithubHandle: `github: false` means no handle,
+    # an explicit `github_username`/`github` string wins, otherwise the id is the handle
     try:
         response = requests.get(HUB_CONTRIBUTORS_URL, timeout=30)
         response.raise_for_status()
         contributors = yaml.safe_load(response.text) or {}
-        return {
-            str(contributor_id).lower(): str(contributor_id)
-            for contributor_id, info in contributors.items()
-            if (info or {}).get("github") is not False
-        }
+        handles = {}
+        for contributor_id, info in contributors.items():
+            info = info or {}
+            github = info.get("github_username")
+            if github is None:
+                github = info.get("github")
+            if github is False:
+                continue
+            if isinstance(github, str) and github.strip():
+                handle = github.strip().lstrip("@")
+            else:
+                handle = str(contributor_id)
+            handles[str(contributor_id).lower()] = handle
+        return handles
     except Exception as e:
         print(f"Error in loading Hub contributors, authors will not be tagged: {e}")
         return {}
