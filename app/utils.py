@@ -146,6 +146,9 @@ class utils:
         if not existing_files:
             pr_title = f"📢 New Post: {link}"
             pr_body = f"🤖 New post added [{title}]({link})"
+            if entry.get("authors"):
+                mentions = " ".join(f"@{author}" for author in entry["authors"])
+                pr_body += f"\n\ncc: {mentions} please review."
 
             try:
                 pr = self.repo.create_pull(
