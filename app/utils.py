@@ -23,6 +23,7 @@ class utils:
         if configs is None:
             raise ValueError("No config found in the file")
 
+        self.configs = configs
         self.list = configs.get(self.item_type, [])
         if not self.list:
             print(f"No {self.item_type} found in the config file")
@@ -40,6 +41,15 @@ class utils:
                 )
         if errors:
             raise ValueError("\n".join(errors))
+
+        self.dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
+        if self.dry_run:
+            print("Running in dry-run mode: no files or pull requests will be created")
+            self.repo = None
+            self.start_date = None
+            self.update_existing_pr = False
+            self.existing_prs = []
+            return
 
         access_token = os.environ.get("GALAXY_SOCIAL_BOT_TOKEN")
         repo_name = os.environ.get("REPO")
@@ -64,6 +74,9 @@ class utils:
                 f"repo:{repo_name} is:pr base:main head:{self.bot_path}"
             )
 
+    def get_config(self, item_type):
+        return self.configs.get(item_type, [])
+
     def process_entry(self, entry):
         title = entry.get("title")
         config = entry.get("config")
@@ -77,6 +90,18 @@ class utils:
         if self.start_date and date < self.start_date:
             print(f"Skipping as it is older: {title}")
             return False
+
+        if self.dry_run:
+            for group_name, media_list in config.get("media", {}).items():
+                config_dict = {"media": media_list}
+                for key in ["mentions", "hashtags"]:
+                    for media in media_list:
+                        if config.get(key) and config[key].get(media):
+                            config_dict.setdefault(key, {})[media] = config[key][media]
+                md_config = yaml.dump(config_dict, sort_keys=False)
+                print(f"[dry-run] Would create {file_path}-{group_name}.md")
+                print(f"[dry-run] ---\n{md_config}---\n{formatted_text}")
+            return True
 
         existing_pr_issue = None
         for pr in self.existing_prs:

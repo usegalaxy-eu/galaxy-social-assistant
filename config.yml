@@ -164,6 +164,87 @@ json_feeds:
         esg:
           - EuroScienceGateway
 
+
+tag_feeds:
+  # Tag feeds only ever take effect for items that are also present in the JSON
+  # feeds above; their entries are matched by URL. Items found only in a tag
+  # feed (e.g. events too far in the future to be included in a JSON event feed)
+  # are skipped until they appear in a JSON feed as well.
+
+  - title: "Tagged esg4stars"
+  # Items on the Hub tagged "esg4stars" (https://galaxyproject.org/tags/esg4stars/)
+  # are considered to be of high EU relevance by default and receive special treatment:
+  # - they will always be routed to matrix-eu-announce unless restricted
+  #   explicitly to just "freiburg" or the "us" and
+  # - use mastodon-eu-freiburg instead of mastodon-galaxyproject unless restricted explicitly to "us",
+  # - will always use the hashtag #ESG4Stars and
+  # - mention @REA@ec.social-network.europa.eu on Mastodon and
+  #   @scienceinnovation.ec.europa.eu on bluesky if the post is of "global" relevance
+
+    url: https://galaxyproject.org/tags/esg4stars/feed.atom
+    media:
+      group1:
+        linkedin-galaxyproject:
+          - global
+          - us
+      group2:
+        bluesky-galaxyproject:
+          - global
+          - us
+      group3:
+        mastodon-galaxyproject:
+          - us
+        mastodon-eu-freiburg:
+          - global
+          - all-eu
+          - eu
+          - freiburg
+        matrix-eu-announce:
+          - global
+          - all-eu
+          - eu
+
+    media_conflicts:
+      mastodon-eu-freiburg:
+        - mastodon-galaxyproject
+
+    hashtags:
+      mastodon-eu-freiburg:
+        all:
+          - UseGalaxy
+          - GalaxyProject
+          - ESG4Stars
+        freiburg:
+          - UniFreiburg
+      mastodon-galaxyproject:
+        all:
+          - UseGalaxy
+          - GalaxyProject
+          - ESG4Stars
+      bluesky-galaxyproject:
+        all:
+          - UseGalaxy
+          - GalaxyProject
+          - ESG4Stars
+      linkedin-galaxyproject:
+        all:
+          - UseGalaxy
+          - GalaxyProject
+          - ESG4Stars
+
+    mentions:
+      mastodon-galaxyproject:
+        all:
+          - galaxyfreiburg@bawü.social
+      mastodon-eu-freiburg:
+        global:
+          - galaxyproject@mstdn.science
+          - REA@ec.social-network.europa.eu
+      bluesky-galaxyproject:
+        global:
+          - scienceinnovation.ec.europa.eu
+
+
 # youtube_channels:
 #   - channel: "https://www.youtube.com/c/galaxyproject"
 #     format: "🎥 New YouTube Video Released!\n\n{title}\n\n🔗 Watch it now: {link}"
