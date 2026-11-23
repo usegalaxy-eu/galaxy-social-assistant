@@ -5,10 +5,40 @@ from urllib.parse import urlsplit
 
 import feedparser
 import requests
+import yaml
 from bs4 import BeautifulSoup
 from dateutil import parser
 from markdownify import markdownify
 from utils import utils
+
+HUB_CONTRIBUTORS_URL = "https://raw.githubusercontent.com/galaxyproject/galaxy-hub/HEAD/content/CONTRIBUTORS.yaml"
+
+
+def load_github_handles():
+    # Hub author ids are GitHub handles unless the contributor sets `github: false`
+    try:
+        response = requests.get(HUB_CONTRIBUTORS_URL, timeout=30)
+        response.raise_for_status()
+        contributors = yaml.safe_load(response.text) or {}
+        return {
+            str(contributor_id).lower(): str(contributor_id)
+            for contributor_id, info in contributors.items()
+            if (info or {}).get("github") is not False
+        }
+    except Exception as e:
+        print(f"Error in loading Hub contributors, authors will not be tagged: {e}")
+        return {}
+
+
+def github_authors(authors, github_handles):
+    handles = []
+    if not isinstance(authors, str):
+        return handles
+    for author in authors.split(","):
+        handle = github_handles.get(author.strip().lower())
+        if handle and handle not in handles:
+            handles.append(handle)
+    return handles
 
 
 def normalize_link(link):
@@ -89,6 +119,7 @@ def main():
     config_name = "json_feeds"
     utils_obj = utils(json_feed_bot_path, config_name)
     tag_feeds = utils_obj.get_config("tag_feeds")
+    github_handles = load_github_handles()
 
     # Items are collected across all feeds before anything is emitted, keyed by
     # their Hub URL. Tag feeds only take effect for items collected here, so
@@ -310,6 +341,7 @@ def main():
             "rel_file_path": f"{item['folder']}/{item['file_name']}",
             "formatted_text": formatted_text,
             "link": item["hub_link"],
+            "authors": github_authors(item["entry"].get("authors"), github_handles),
         }
         utils_obj.process_entry(entry_data)
 
